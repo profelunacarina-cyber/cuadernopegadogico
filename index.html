@@ -743,5 +743,47 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAlumnos();
 });
 </script>
+<div id="reportePDF" style="display:none; padding:30px; background:#fff; color:#1A1208; font-family: 'Segoe UI',Tahoma,sans-serif;">
+  <div style="border-bottom:2px solid #1A1208; padding-bottom:10px; margin-bottom:20px;">
+    <h1 style="font-size:20px; text-transform:uppercase; margin-bottom:4px;">Informe de Trayectoria Escolar</h1>
+    <p style="font-size:12px; color:#5C4A30;" id="repFechaEmision"></p>
+  </div>
+  
+  <div style="margin-bottom:20px; background:#FAF8F4; padding:12px; border-radius:6px; border:1px solid #DDD5C8; display:flex; flex-wrap:wrap; gap:20px;">
+    <div><strong>Institución:</strong> <span id="repMetaEscuela"></span></div>
+    <div><strong>Espacio Curricular:</strong> <span id="repMetaMateria"></span></div>
+    <div><strong>Curso/Instancia:</strong> <span id="repMetaCurso"></span></div>
+  </div>
+
+  <h3 style="font-size:14px; margin-bottom:10px; text-transform:uppercase; color:#5C4A30;">Planilla General de Rendimiento y Regularidad</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:11px;" id="repTabla">
+    <thead>
+      <tr style="background:#EDE8DF;">
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:left;">N°</th>
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:left;">Estudiante</th>
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:center;">Condición</th>
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:center;">Inasistencias</th>
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:center;">% Asistencia</th>
+        <th style="border:1px solid #C8BCA8; padding:6px; text-align:center;">Nota Final Numérica</th>
+      </tr>
+    </thead>
+    <tbody id="repTablaBody"></tbody>
+  </table>
+
+  <div style="margin-top:30px;" id="repSeccionObs">
+    <h3 style="font-size:14px; margin-bottom:10px; text-transform:uppercase; color:#5C4A30;">Bitácora de Observaciones Cualitativas</h3>
+    <div id="repObsContenedor"></div>
+  </div>
+
+  <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:11px;">
+    <div>
+      <p>_____________________________________</p>
+      <p style="margin-top:4px; color:#5C4A30;">Firma del Docente a Cargo</p>
+    </div>
+    <div style="text-align:right;">
+      <p>Generado por Sistema de Trayectorias Locales</p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
