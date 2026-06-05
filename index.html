@@ -107,6 +107,7 @@ tr:last-child td{border-bottom:none}
 <body>
 
 <div id="app">
+  <!-- Barra de Encabezado -->
   <div class="topbar">
     <div>
       <div class="topbar-title"><i class="ti ti-school"></i> Gestión Docente Unificada</div>
@@ -114,16 +115,19 @@ tr:last-child td{border-bottom:none}
     </div>
   </div>
 
+  <!-- Barra de Etiquetas Directas (Navegación Principal) -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('dashboard', this)"><i class="ti ti-chart"></i> Vista General</button>
-    <button class="tab-btn" onclick="switchTab('escuelas', this)"><i class="ti ti-school"></i> Gestión Escuelas</button>
+    <button class="tab-btn" onclick="switchTab('escuelas', this)"><i class="ti ti-school"></i> Gestión Escuelas e Instituciones</button>
     <button class="tab-btn" onclick="switchTab('alumnos', this)"><i class="ti ti-users"></i> Gestión Alumnos</button>
     <button class="tab-btn" onclick="switchTab('asistencia', this)"><i class="ti ti-calendar"></i> Asistencia Diaria</button>
     <button class="tab-btn" onclick="switchTab('cuaderno-aula', this)"><i class="ti ti-book"></i> Cuaderno de Aula Integrado</button>
   </div>
 
+  <!-- CUERPO DE CONTENIDOS -->
   <div class="content-body">
     
+    <!-- ETIQUETA 1: DASHBOARD / VISTA GENERAL -->
     <div id="panel-dashboard" class="tab-panel active">
       <div class="row">
         <select id="dashCurso" onchange="renderDashboard()"></select>
@@ -161,7 +165,7 @@ tr:last-child td{border-bottom:none}
                 <th class="center">Faltas Acum.</th>
                 <th class="center">% Asist.</th>
                 <th class="center">Promedio Actividades</th>
-                <th class="center">Últimas Notas Cuali / Observaciones de Aula</th>
+                <th>Últimas Notas Cuali / Observaciones de Aula</th>
               </tr>
             </thead>
             <tbody id="dashTableBody"></tbody>
@@ -170,24 +174,61 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
+    <!-- ETIQUETA 2: GESTIÓN DE ESCUELAS Y MATERIAS (CORREGIDO Y OPTIMIZADO) -->
     <div id="panel-escuelas" class="tab-panel">
-      <div class="card">
-        <div class="card-title">Configuración de Estructuras Institucionales</div>
-        <div class="row">
-          <input type="text" id="escNumero" placeholder="N° o Nombre Escuela (Ej: 753)" />
-          <input type="text" id="escMateria" placeholder="Materia (Ej: Economía)" />
-          <input type="text" id="escCurso" placeholder="Curso/División (Ej: 4to II)" />
-          <input type="text" id="escHorario" placeholder="Horario (Ej: Lun 18-20hs)" />
-          <select id="escCiclo">
-            <option value="Anual">Régimen Anual</option>
-            <option value="Cuatrimestral">Régimen Cuatrimestral</option>
-          </select>
-          <button class="success" onclick="agregarEstructura()"><i class="ti ti-plus"></i> Dar de Alta Escuela</button>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px;">
+        
+        <!-- Bloque Izquierdo: Crear Escuela Base -->
+        <div class="card">
+          <div class="card-title">1. Registrar Institución / Escuela</div>
+          <div class="row" style="flex-direction: column; align-items: stretch; gap: 12px;">
+            <div>
+              <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Nombre o Número de la Escuela:</label>
+              <input type="text" id="escNumero" placeholder="Ej: Escuela N° 753, Colegio Nacional, etc." style="width:100%" />
+            </div>
+            <button class="success" style="justify-content: center;" onclick="agregarEscuelaBase()"><i class="ti ti-plus"></i> Guardar Escuela Base</button>
+          </div>
+        </div>
+
+        <!-- Bloque Derecho: Agregar Materias / Cursos a la escuela existente -->
+        <div class="card">
+          <div class="card-title">2. Asignar Materias y Cursos a una Escuela</div>
+          <div class="row" style="flex-direction: column; align-items: stretch; gap: 12px;">
+            <div>
+              <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Seleccionar Escuela:</label>
+              <select id="escSelectorBase" style="width:100%"></select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Materia:</label>
+                <input type="text" id="escMateria" placeholder="Ej: Economía" style="width:100%" />
+              </div>
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Curso / División:</label>
+                <input type="text" id="escCurso" placeholder="Ej: 4to II" style="width:100%" />
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Horario:</label>
+                <input type="text" id="escHorario" placeholder="Ej: Lun 18-20hs" style="width:100%" />
+              </div>
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Régimen:</label>
+                <select id="escCiclo" style="width:100%">
+                  <option value="Anual">Régimen Anual</option>
+                  <option value="Cuatrimestral">Régimen Cuatrimestral</option>
+                </select>
+              </div>
+            </div>
+            <button class="success" style="justify-content: center; background: var(--blue);" onclick="agregarMateriaCurso()"><i class="ti ti-plus"></i> Dar de Alta Espacio Curricular</button>
+          </div>
         </div>
       </div>
 
+      <!-- Tabla General de Espacios Abiertos -->
       <div class="card">
-        <div class="card-title">Mis Espacios Curriculares Abiertos</div>
+        <div class="card-title">Mis Espacios Curriculares y Divisiones Asignadas</div>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -206,6 +247,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
+    <!-- ETIQUETA 3: GESTIÓN DE ALUMNOS -->
     <div id="panel-alumnos" class="tab-panel">
       <div class="row">
         <select id="aluCursoFiltro" onchange="renderAlumnos()"></select>
@@ -241,6 +283,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
+    <!-- ETIQUETA 4: ASISTENCIA DIARIA -->
     <div id="panel-asistencia" class="tab-panel">
       <div class="row">
         <select id="asistCurso" onchange="renderAsistencia()"></select>
@@ -264,6 +307,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
+    <!-- ETIQUETA 5: CUADERNO DE AULA INTEGRADO -->
     <div id="panel-cuaderno-aula" class="tab-panel">
       <div class="row">
         <select id="cuadCurso" onchange="renderCuaderno()"></select>
@@ -276,13 +320,12 @@ tr:last-child td{border-bottom:none}
         </div>
         
         <div style="display:none;" id="zonaEdicionClase">
-          
           <div class="card" style="background:#FAF9F5; border-color:var(--border-focus);">
             <div class="card-title">📖 Secuencia Didáctica e Información del Día</div>
             <div class="row">
-              <input type="text" id="clTitulo" placeholder="Tema principal de la clase (Ej: Liquidación de SAC)" style="flex:1;" onchange="autoGuardarEncabezado()" />
+              <input type="text" id="clTitulo" placeholder="Tema principal de la clase" style="flex:1;" onchange="autoGuardarEncabezado()" />
               <input type="date" id="clFecha" onchange="autoGuardarEncabezado()" />
-              <input type="number" id="clPonderacion" placeholder="Ponderación % (1-100)" style="width:110px;" title="Importancia de la actividad de hoy" onchange="autoGuardarEncabezado()" />
+              <input type="number" id="clPonderacion" placeholder="Ponderación % (1-100)" style="width:110px;" onchange="autoGuardarEncabezado()" />
             </div>
             <div>
               <textarea id="clRelatoria" rows="4" placeholder="Planificación corta, secuencia didáctica de hoy o relatoría general del grupo..." onchange="autoGuardarEncabezado()"></textarea>
@@ -306,11 +349,10 @@ tr:last-child td{border-bottom:none}
             </div>
           </div>
           
-          <div class="row style=row-end">
+          <div class="row">
             <button class="success" onclick="alert('¡Todos los datos de la clase, notas y bitácora se guardaron automáticamente!')"><i class="ti ti-save"></i> Forzar Guardado General</button>
             <button class="danger" onclick="eliminarClaseActual()"><i class="ti ti-trash"></i> Eliminar Registro de esta Clase</button>
           </div>
-
         </div>
       </div>
     </div>
@@ -326,17 +368,18 @@ tr:last-child td{border-bottom:none}
 // ========================================================
 // MOTOR CENTRAL LOCAL-FIRST (PERSISTENCIA TOTAL DE DATOS)
 // ========================================================
-const STORAGE_KEY = "SISTEMA_DOCENTE_INTEGRADO_V3";
+const STORAGE_KEY = "SISTEMA_DOCENTE_INTEGRADO_V4";
 
-window.cursos = []; 
+window.escuelasBase = []; // Estructura unificada: [{id, nombre}]
+window.cursos = [];       // Estructura ramificada: [{id, escuelaId, escuelaNombre, materia, nombre, horario, ciclo}]
 window.alumnos = {}; 
 window.asistencias = {}; 
-window.clases = []; // Contiene {id, cursoId, titulo, fecha, ponderacion, relatoria, notas: {alId: ''}, observaciones: {alId: ''}}
+window.clases = []; 
 
 window.claseSeleccionadaId = null;
 
 function guardarTodo() {
-  const data = { cursos, alumnos, asistencias, clases };
+  const data = { escuelasBase, cursos, alumnos, asistencias, clases };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -345,6 +388,7 @@ function cargarTodo() {
   if(!raw) return false;
   try {
     const parse = JSON.parse(raw);
+    window.escuelasBase = parse.escuelasBase || [];
     window.cursos = parse.cursos || [];
     window.alumnos = parse.alumnos || {};
     window.asistencias = parse.asistencias || {};
@@ -370,6 +414,7 @@ function switchTab(tabId, btn) {
 }
 
 function sincronizarSelectoresCursos() {
+  // Sincronizar selectores de Cursos/Materias globales
   const selectores = ['dashCurso', 'aluCursoFiltro', 'asistCurso', 'cuadCurso'];
   const cacheValores = {};
   
@@ -385,30 +430,72 @@ function sincronizarSelectoresCursos() {
     cursos.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
-      opt.textContent = `Esc. ${c.escuela} — ${c.materia} [${c.nombre}] (${c.ciclo})`;
+      opt.textContent = `${c.escuelaNombre} — ${c.materia} [${c.nombre}]`;
       el.appendChild(opt);
     });
     if(cacheValores[id] && el.querySelector(`option[value="${cacheValores[id]}"]`)) {
       el.value = cacheValores[id];
     }
   });
+
+  // Sincronizar el selector interno de Escuelas Base
+  const selBase = document.getElementById('escSelectorBase');
+  if(selBase) {
+    selBase.innerHTML = '';
+    escuelasBase.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e.id;
+      opt.textContent = e.nombre;
+      selBase.appendChild(opt);
+    });
+  }
 }
 
-// --- ETIQUETA GESTIÓN ESCUELAS ---
-function agregarEstructura() {
-  const esc = document.getElementById('escNumero').value.trim();
+// --- NUEVA GESTIÓN DE ESCUELAS Y CURSOS (RAMIFICADA) ---
+function agregarEscuelaBase() {
+  const nombre = document.getElementById('escNumero').value.trim();
+  if(!nombre) { alert("Ingrese el nombre o número de la institución."); return; }
+
+  // Evitar duplicados simples
+  if(escuelasBase.some(e => e.nombre.toLowerCase() === nombre.toLowerCase())) {
+    alert("Esta institución ya se encuentra registrada.");
+    return;
+  }
+
+  const nuevaEscuela = { id: 'esc_' + Date.now(), nombre: nombre };
+  escuelasBase.push(nuevaEscuela);
+  document.getElementById('escNumero').value = '';
+  
+  guardarTodo();
+  sincronizarSelectoresCursos();
+  alert(`"${nombre}" guardada con éxito. Ya podés asignarle materias en el bloque derecho.`);
+}
+
+function agregarMateriaCurso() {
+  const escId = document.getElementById('escSelectorBase').value;
   const mat = document.getElementById('escMateria').value.trim();
   const cur = document.getElementById('escCurso').value.trim();
   const hor = document.getElementById('escHorario').value.trim();
   const cic = document.getElementById('escCiclo').value;
 
-  if(!esc || !mat || !cur) { alert("Por favor complete los campos de Escuela, Materia y Curso."); return; }
+  if(!escId) { alert("Primero debés registrar al menos una escuela en el panel izquierdo."); return; }
+  if(!mat || !cur) { alert("Por favor complete los campos obligatorios: Materia y Curso/División."); return; }
 
-  const nuevoCurso = { id: 'c_' + Date.now(), escuela: esc, materia: mat, nombre: cur, horario: hor, ciclo: cic };
+  const escuelaObj = escuelasBase.find(e => e.id === escId);
+
+  const nuevoCurso = { 
+    id: 'c_' + Date.now(), 
+    escuelaId: escId,
+    escuelaNombre: escuelaObj.nombre, 
+    materia: mat, 
+    nombre: cur, 
+    horario: hor, 
+    ciclo: cic 
+  };
+
   cursos.push(nuevoCurso);
   alumnos[nuevoCurso.id] = [];
 
-  document.getElementById('escNumero').value = '';
   document.getElementById('escMateria').value = '';
   document.getElementById('escCurso').value = '';
   document.getElementById('escHorario').value = '';
@@ -423,19 +510,19 @@ function renderEscuelas() {
   let html = '';
   cursos.forEach(c => {
     html += `<tr>
-      <td><strong>Escuela N° ${c.escuela}</strong></td>
+      <td><strong>${c.escuelaNombre}</strong></td>
       <td>${c.materia}</td>
       <td><span class="badge bg-blue">${c.nombre}</span></td>
       <td>${c.horario || 'No definido'}</td>
       <td><span class="badge bg-amber">${c.ciclo}</span></td>
-      <td class="center"><button class="danger" style="padding:4px 8px;" onclick="eliminarEscuela('${c.id}')"><i class="ti ti-trash"></i></button></td>
+      <td class="center"><button class="danger" style="padding:4px 8px;" onclick="eliminarCursoMateria('${c.id}')"><i class="ti ti-trash"></i></button></td>
     </tr>`;
   });
-  tbody.innerHTML = html || `<tr><td colspan="6" class="center">No hay escuelas o materias registradas aún.</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="6" class="center">No hay espacios curriculares creados todavía.</td></tr>`;
 }
 
-function eliminarEscuela(id) {
-  if(confirm("¿Está seguro de eliminar esta institución? Se perderán todos sus alumnos, asistencias, cuadernos y notas vinculadas.")) {
+function eliminarCursoMateria(id) {
+  if(confirm("¿Está seguro de eliminar esta materia/curso? Se perderán todos sus alumnos, asistencias, cuadernos y notas vinculadas.")) {
     cursos = cursos.filter(c => c.id !== id);
     delete alumnos[id];
     delete asistencias[id];
@@ -452,7 +539,7 @@ function agregarAlumno() {
   const nom = document.getElementById('aluNombre').value.trim();
   const cond = document.getElementById('aluCondicion').value;
 
-  if(!cId) { alert("Primero cree una Escuela / Curso en la pestaña correspondiente."); return; }
+  if(!cId) { alert("Primero debés dar de alta una Escuela y una Materia en la pestaña de Estructuras."); return; }
   if(!nom) { alert("Ingrese el nombre completo del estudiante."); return; }
 
   if(!alumnos[cId]) alumnos[cId] = [];
@@ -468,7 +555,7 @@ function agregarAlumno() {
 function renderAlumnos() {
   const cId = document.getElementById('aluCursoFiltro').value;
   const tbody = document.getElementById('alumnosTableBody');
-  if(!cId) { tbody.innerHTML = `<tr><td colspan="4" class="center">Seleccione o cree un curso primero.</td></tr>`; return; }
+  if(!cId) { tbody.innerHTML = `<tr><td colspan="4" class="center">Seleccione o cree una estructura curricular primero.</td></tr>`; return; }
 
   const lista = alumnos[cId] || [];
   let html = '';
@@ -534,8 +621,8 @@ function cambiarAsistenciaEstado(cId, fecha, alId, valor) {
 
 function calcularAsistenciaAlumno(cId, alId) {
   const registros = asistencias[cId] || {};
-  let clasesDictadas = Object.keys(registros).length || 27; 
-  if(clasesDictadas === 0) clasesDictadas = 27;
+  let clasesDictadas = Object.keys(registros).length; 
+  if(clasesDictadas === 0) clasesDictadas = 1; // Prevenir división por cero
 
   let A = 0, T = 0;
   for(let f in registros) {
@@ -548,10 +635,7 @@ function calcularAsistenciaAlumno(cId, alId) {
   return { faltas, porcentaje: pct };
 }
 
-
-// ========================================================
-// NUEVA LOGICA: CUADERNO DE AULA INTEGRADO RELACIONAL
-// ========================================================
+// --- CUADERNO DE AULA INTEGRADO ---
 function renderCuaderno() {
   const cId = document.getElementById('cuadCurso').value;
   const sidebar = document.getElementById('sidebarClasesItems');
@@ -576,7 +660,7 @@ function renderCuaderno() {
 
 function nuevaClaseCuaderno() {
   const cId = document.getElementById('cuadCurso').value;
-  if(!cId) { alert("Seleccione un curso primero."); return; }
+  if(!cId) { alert("Seleccione un espacio curricular primero."); return; }
 
   const nueva = {
     id: 'cl_' + Date.now(),
@@ -585,8 +669,8 @@ function nuevaClaseCuaderno() {
     fecha: new Date().toISOString().split('T')[0],
     ponderacion: 10,
     relatoria: '',
-    notas: {},          // { alumnoId: 'nota' }
-    observaciones: {}   // { alumnoId: 'observacion cualitativa' }
+    notas: {},          
+    observaciones: {}   
   };
 
   clases.push(nueva);
@@ -663,7 +747,7 @@ function autoGuardarFilaAlumno(clId, alId, campo, valor) {
 
 function eliminarClaseActual() {
   if(!window.claseSeleccionadaId) return;
-  if(confirm("¿Eliminar por completo esta clase junto con todas las notas y observaciones de los alumnos cargadas este día?")) {
+  if(confirm("¿Eliminar por completo esta clase junto con todas las notas y observaciones de los alumnos?")) {
     clases = clases.filter(x => x.id !== window.claseSeleccionadaId);
     window.claseSeleccionadaId = null;
     guardarTodo();
@@ -672,7 +756,6 @@ function eliminarClaseActual() {
   }
 }
 
-// Métricas unificadas para el Dashboard
 function calcularHistorialDocente(cId, alId) {
   const clasesCurso = clases.filter(x => x.cursoId === cId);
   let sumaNotas = 0, cantNotas = 0;
@@ -697,14 +780,13 @@ function calcularHistorialDocente(cId, alId) {
   return { promedio, bitacora: comentariosTexto };
 }
 
-
 // --- ETIQUETA VISTA GENERAL (DASHBOARD) ---
 function renderDashboard() {
   const cId = document.getElementById('dashCurso').value;
   const tbody = document.getElementById('dashTableBody');
   
   if(!cId) {
-    tbody.innerHTML = `<tr><td colspan="7" class="center">Cree una institución y curso para comenzar la visualización.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="center">Configure una escuela, materia y alumnos para comenzar.</td></tr>`;
     return;
   }
 
@@ -724,7 +806,7 @@ function renderDashboard() {
       <td class="center">${al.num}</td>
       <td><strong>${al.nombre}</strong></td>
       <td><span class="badge bg-blue">${al.cond}</span></td>
-      <td class="center font-weight:600">${asis.faltas}</td>
+      <td class="center" style="font-weight:600;">${asis.faltas}</td>
       <td class="center"><span class="badge ${bAsistClass}">${asis.porcentaje}%</span></td>
       <td class="center" style="font-weight:700; color:var(--blue);">${historial.promedio}</td>
       <td style="color:var(--ink-light); font-size:11px;">${historial.bitacora}</td>
@@ -739,9 +821,7 @@ function renderDashboard() {
   document.getElementById('lblTareas').textContent = (clases.filter(x => x.cursoId === cId)).length;
 }
 
-// ========================================================
-// REPORTE INSTITUCIONAL DINÁMICO IMPRESO INTEGRADO (PDF)
-// ========================================================
+// --- REPORTE PDF ---
 function generarReportePDF() {
   const cId = document.getElementById('dashCurso').value;
   if(!cId) return;
@@ -772,7 +852,6 @@ function generarReportePDF() {
     </tr>`;
   });
 
-  // Adjuntar el diario de secuencia didáctica colectivo del docente en el PDF
   const clasesCurso = clases.filter(x => x.cursoId === cId).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
   let bloqueSecuencias = '';
   if(clasesCurso.length > 0) {
@@ -790,7 +869,7 @@ function generarReportePDF() {
     <div class="rep-header">
       <div>
         <h1 style="font-size:22px; text-transform:uppercase; font-weight:700;">Informe Analítico de Trayectorias y Secuencias</h1>
-        <p style="font-size:13px; color:#6E6557; margin-top:4px;">Escuela N°: ${cursoActivo.escuela} — Espacio Curricular: ${cursoActivo.materia}</p>
+        <p style="font-size:13px; color:#6E6557; margin-top:4px;">Institución: ${cursoActivo.escuelaNombre} — Espacio Curricular: ${cursoActivo.materia}</p>
       </div>
       <div style="font-size:11px; text-align:right; line-height:1.4;">
         <strong>Curso: ${cursoActivo.nombre}</strong><br>
@@ -819,7 +898,6 @@ function generarReportePDF() {
       </div>
     </div>
 
-    <div style="font-size:12px; font-weight:700; text-transform:uppercase; border-left:3px solid #7A6F4D; padding-left:6px; margin-bottom:8px;">Planilla Analítica de Rendimiento Colectivo y Bitácora</div>
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
       <thead>
         <tr style="background:#EFECE3;">
@@ -838,14 +916,6 @@ function generarReportePDF() {
     </table>
 
     ${bloqueSecuencias}
-
-    <div style="margin-top:50px; display:flex; justify-content:flex-end;">
-      <div style="width:230px; text-align:center; font-size:11px;">
-        <div style="border-top:1px solid #2B261F; margin-bottom:4px;"></div>
-        <strong>Firma del Docente a Cargo</strong><br>
-        <span style="color:#6E6557; font-size:10px;">Área: ${cursoActivo.materia}</span>
-      </div>
-    </div>
   `;
 
   const panelPDF = document.getElementById('reportePDF');
@@ -856,13 +926,21 @@ function generarReportePDF() {
   }, 150);
 }
 
-// INICIALIZACIÓN
+// INICIALIZACIÓN CON DATOS DEMO DE LA NUEVA JERARQUÍA
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('asistFecha').value = new Date().toISOString().split('T')[0];
 
   if(!cargarTodo()) {
-    // Demo limpia
-    cursos = [{ id: 'c_demo1', escuela: '753', materia: 'Administración y Liq. de Sueldos', nombre: 'Módulo II A', horario: 'Lun 18-20hs', ciclo: 'Cuatrimestral' }];
+    // Escuelas Base Demo
+    escuelasBase = [
+      { id: 'esc_demo1', nombre: 'Escuela N° 753' },
+      { id: 'esc_demo2', nombre: 'Colegio Politécnico' }
+    ];
+    // Cursos asignados a esas escuelas demo
+    cursos = [
+      { id: 'c_demo1', escuelaId: 'esc_demo1', escuelaNombre: 'Escuela N° 753', materia: 'Administración y Liq. de Sueldos', nombre: '4to II - Módulo A', horario: 'Lun 18-20hs', ciclo: 'Cuatrimestral' },
+      { id: 'c_demo2', escuelaId: 'esc_demo1', escuelaNombre: 'Escuela N° 753', materia: 'Economía Política', nombre: '5to I', horario: 'Mie 14-16hs', ciclo: 'Anual' }
+    ];
     alumnos['c_demo1'] = [
       { id: 'al_demo1', num: 1, nombre: 'Álvarez, Martina', cond: 'Regular' },
       { id: 'al_demo2', num: 2, nombre: 'García, Valentina', cond: 'Regular' }
@@ -873,7 +951,7 @@ document.addEventListener("DOMContentLoaded", () => {
       titulo: 'Introducción a Convenios Colectivos',
       fecha: new Date().toISOString().split('T')[0],
       ponderacion: 15,
-      relatoria: 'Se presentó el artículo 14 bis de la CN y los diferentes tipos de paritarias.',
+      relatoria: 'Se presentó el artículo 14 bis de la CN y tipos de paritarias.',
       notas: { 'al_demo1': '9', 'al_demo2': '7' },
       observaciones: { 'al_demo1': 'Comprende rápido las escalas salariales.', 'al_demo2': 'Le costó calcular las horas extras.' }
     }];
@@ -882,6 +960,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sincronizarSelectoresCursos();
   renderDashboard();
+  renderEscuelas();
 });
 </script>
 </body>
