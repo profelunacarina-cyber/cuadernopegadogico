@@ -3,938 +3,885 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Seguimiento Docente Pro · Sistema Multiescuela</title>
+<title>Agenda Docente Profesional · Sistema de Gestión Integral</title>
 <style>
-/* Reemplazo de íconos Tabler por emojis embebidos (sin internet) */
+/* Íconos embebidos (Sin necesidad de conexión a Internet) */
 .ti { display: inline-block; font-style: normal; line-height: 1; font-size: 14px; }
 .ti.ti-school::before { content: "🏫"; }
-.ti.ti-settings::before { content: "⚙️"; }
-.ti.ti-info-circle::before { content: "ℹ️"; }
-.ti.ti-file-export::before { content: "📄"; }
-.ti.ti-plus::before { content: "➕"; font-size: 11px; }
+.ti.ti-users::before { content: "👥"; }
+.ti.ti-calendar::before { content: "📅"; }
+.ti.ti-notebook::before { content: "📚"; }
+.ti.ti-book::before { content: "📖"; }
+.ti.ti-chart::before { content: "📊"; }
+.ti.ti-file-pdf::before { content: "📄"; }
+.ti.ti-plus::before { content: "➕"; }
 .ti.ti-trash::before { content: "🗑️"; }
-.ti.ti-download::before { content: "⬇️"; }
-.ti.ti-upload::before { content: "⬆️"; }
-.ti.ti-database-export::before { content: "💾"; }
-.ti.ti-alert-circle::before { content: "⚠️"; }
-.ti.ti-alert-triangle::before { content: "⚠️"; }
+.ti.ti-save::before { content: "💾"; }
 </style>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#FAF8F4;font-family:'Segoe UI',Tahoma,sans-serif;color:#1A1208;font-size:13px}
+body{background:#F7F5F0;font-family:'Segoe UI',system-ui,sans-serif;color:#2B261F;font-size:13px;line-height:1.4}
 :root{
-  --ink:#1A1208;--ink2:#5C4A30;--cream:#FAF8F4;--sand:#EDE8DF;--bark:#B89A6A;
-  --white:#FFFFFF;--border:#DDD5C8;--border2:#C8BCA8;
-  --green:#2E6B4A;--gl:#E8F5EE;--gc:#1A4A30;
-  --red:#B83A2A;--rl:#FAECEA;--rc:#7A2218;
-  --amber:#B87210;--al:#FDF3E2;--ac:#7A4C08;
-  --blue:#1E5C9A;--bl:#E8F0FA;--bc:#0C3C6A;
+  --ink:#2B261F;--ink-light:#6E6557;--bg-main:#F7F5F0;--bg-card:#FFFFFF;
+  --border:#E3DEC3;--border-focus:#A89F7D;--accent:#7A6F4D;
+  --green:#2A5C3F;--green-light:#EAF2EC;--red:#9E3224;--red-light:#F9EBEA;
+  --amber:#A06418;--amber-light:#FDF3E7;--blue:#245280;--blue-light:#EBF2F9;
 }
 #app{min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:var(--ink);color:#F5EFE6;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.topbar-title{font-size:15px;font-weight:600;letter-spacing:.3px}
-.topbar-sub{font-size:11px;color:var(--bark);margin-top:2px}
-.topbar-actions{display:flex;gap:8px}
-.nav{background:#261C0C;display:flex;gap:1px;padding:0 16px;overflow-x:auto}
-.nav-btn{background:transparent;border:none;color:#A08060;padding:12px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
-.nav-btn:hover{color:#D0B090}
-.nav-btn.on{color:#F5EFE6;border-bottom-color:var(--bark);font-weight:600}
-.body{padding:14px 16px;flex:1}
-.sec{display:none}.sec.on{display:block}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
-.row-end{justify-content:flex-end}
-select,input[type=text],input[type=date],input[type=number]{
-  background:var(--white);border:1px solid var(--border2);border-radius:6px;
-  padding:6px 10px;font-size:12px;color:var(--ink);outline:none}
-select:focus,input:focus{border-color:var(--bark)}
-button{background:var(--ink);color:#F5EFE6;border:none;border-radius:6px;padding:7px 13px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;user-select:none}
+
+/* Barra Superior */
+.topbar{background:var(--ink);color:#F7F5F0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:16px;font-weight:600;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.topbar-sub{font-size:11px;color:#A89F7D;margin-top:2px}
+
+/* Navegación por Etiquetas (Pestañas) */
+.nav-tabs{background:#3D352B;display:flex;gap:2px;padding:0 20px;overflow-x:auto;border-bottom:3px solid var(--accent)}
+.tab-btn{background:transparent;border:none;color:#B5AB99;padding:14px 16px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab-btn:hover{color:#F7F5F0;background:rgba(255,255,255,0.05)}
+.tab-btn.active{color:#F7F5F0;background:var(--accent);font-weight:600}
+
+/* Cuerpo de Contenido */
+.content-body{padding:20px;flex:1;max-width:1400px;width:100%;margin:0 auto}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* Elementos Comunes */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}
+.card-title{font-size:13px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;border-bottom:2px solid var(--bg-main);padding-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+
+/* Formularios */
+select,input[type=text],input[type=date],input[type=number],textarea{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:6px;
+  padding:8px 12px;font-size:12px;color:var(--ink);outline:none;font-family:inherit}
+select:focus,input:focus,textarea:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(168,159,125,0.15)}
+textarea{resize:vertical;width:100%}
+
+/* Botones */
+button{background:var(--ink);color:#F7F5F0;border:none;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s}
 button:hover{opacity:.9}
-button.sec-btn{background:var(--white);color:var(--ink);border:1px solid var(--border2)}
-button.sec-btn:hover{background:var(--sand)}
-button.grn{background:var(--green)}
-button.amb{background:var(--amber)}
-button.bl{background:var(--blue)}
-button.red{background:var(--red)}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
-.b-green{background:var(--gl);color:var(--gc)}
-.b-amber{background:var(--al);color:var(--ac)}
-.b-red{background:var(--rl);color:var(--rc)}
-.b-blue{background:var(--bl);color:var(--bc)}
-.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
-.card-head{font-size:12px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;border-bottom:1px solid var(--sand);padding-bottom:6px;display:flex;justify-content:space-between;align-items:center}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--sand);padding:8px 10px;text-align:left;font-weight:600;color:var(--ink2);border-bottom:1px solid var(--border2)}
-td{padding:6px 10px;border-bottom:1px solid var(--sand);vertical-align:middle}
-.tw">overflow-x:auto}
+button.secondary{background:var(--bg-main);color:var(--ink);border:1px solid var(--border)}
+button.secondary:hover{background:#EFECE3}
+button.success{background:var(--green)}
+button.warning{background:var(--amber)}
+button.danger{background:var(--red)}
+
+/* Tablas */
+.table-wrapper{overflow-x:auto;background:var(--bg-card);border-radius:6px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+thead th{background:#EFECE3;padding:10px 12px;font-weight:600;color:var(--ink-light);border-bottom:1px solid var(--border)}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--bg-main);vertical-align:middle}
+tr:last-child td{border-bottom:none}
 .center{text-align:center}
-.btn-grid{display:flex;gap:2px}
-.bg-btn{background:var(--sand);border:none;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--ink2)}
-.bg-btn:first-child{border-top-left-radius:4px;border-bottom-left-radius:4px}
-.bg-btn:last-child{border-top-right-radius:4px;border-bottom-right-radius:4px}
-.bg-btn.on-p{background:var(--green);color:var(--white);font-weight:bold}
-.bg-btn.on-a{background:var(--red);color:var(--white);font-weight:bold}
-.bg-btn.on-t{background:var(--amber);color:var(--white);font-weight:bold}
-.ni{width:45px;border:1px solid var(--border2);border-radius:5px;padding:3px;text-align:center;font-weight:700}
-.ni-p{background:var(--gl);color:var(--gc);border-color:var(--bark)}
-textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:12px;font-family:inherit;resize:vertical}
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,18,8,.4);z-index:100;align-items:center;justify-content:center;padding:16px}
-.modal.on{display:flex}
-.modal-box{background:var(--white);border-radius:12px;max-width:550px;width:100%;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
-.modal-head{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.esc-item{border:1px solid var(--border);padding:8px;border-radius:6px;margin-bottom:6px;background:var(--cream)}
-.grid-resumen {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.st-card{padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
-.st-num{font-size:20px;font-weight:700;color:var(--ink)}
-.st-lbl{font-size:11px;color:var(--ink2);text-transform:uppercase}
-.obs-row{padding:8px;border-bottom:1px solid var(--sand);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.obs-txt{font-size:12px;color:var(--ink)}
-.obs-meta{font-size:10px;color:var(--ink2);margin-top:2px}
-.empty{text-align:center;padding:30px;color:var(--ink2);font-style:italic}
 
-/* ESTILOS DE PRESENTACIÓN DEL REPORTE IMPRESO (PDF) */
-#reportePDF { font-family: 'Segoe UI', Tahoma, sans-serif; color: #1A1208; }
-.rep-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1A1208; padding-bottom: 12px; margin-bottom: 20px; }
-.rep-titulo { font-size: 22px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #1A1208; }
-.rep-subtitulo { font-size: 13px; color: #5C4A30; margin-top: 4px; }
-.rep-meta { font-size: 11px; text-align: right; line-height: 1.4; color: #5C4A30; }
-.rep-info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-.rep-info-item { background: #FAF8F4; border: 1px solid #DDD5C8; padding: 10px; border-radius: 6px; text-align: center; }
-.rep-info-label { font-size: 9px; text-transform: uppercase; color: #5C4A30; font-weight: 600; margin-bottom: 2px; }
-.rep-info-valor { font-size: 16px; font-weight: 700; color: #1A1208; }
-.rep-seccion-titulo { font-size: 12px; text-transform: uppercase; font-weight: 700; color: #5C4A30; margin: 20px 0 8px 0; border-left: 3px solid #B89A6A; padding-left: 6px; }
-#reportePDF table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
-#reportePDF th { background: #EDE8DF !important; color: #1A1208; font-weight: 600; border: 1px solid #C8BCA8; padding: 6px; text-transform: uppercase; font-size: 10px; }
-#reportePDF td { border: 1px solid #DDD5C8; padding: 6px; }
-.rep-pct-good { color: var(--green); font-weight: 600; }
-.rep-pct-warn { color: var(--amber); font-weight: 600; }
-.rep-pct-bad { color: var(--red); font-weight: 600; }
-.rep-firma { margin-top: 50px; display: flex; justify-content: flex-end; }
-.rep-firma-box { width: 220px; text-align: center; font-size: 11px; }
-.rep-firma-linea { border-top: 1px solid #1A1208; margin-bottom: 4px; }
-.rep-firma-nombre { font-weight: 600; }
-.rep-firma-rol { color: #5C4A30; font-size: 10px; }
-.rep-footer { margin-top: 40px; padding-top: 8px; border-top: 1px dashed #DDD5C8; font-size: 9px; color: #5C4A30; text-align: center; line-height: 1.3; }
+/* Badges de estado */
+.badge{display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.bg-green{background:var(--green-light);color:var(--green)}
+.bg-amber{background:var(--amber-light);color:var(--amber)}
+.bg-red{background:var(--red-light);color:var(--red)}
+.bg-blue{background:var(--blue-light);color:var(--blue)}
 
+/* Grillas de Cuadros */
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{padding:14px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.stat-value{font-size:22px;font-weight:700}
+.stat-label{font-size:11px;text-transform:uppercase;color:var(--ink-light);font-weight:500}
+
+/* Estructura Modular Flex para Planificaciones Integradas */
+.planif-layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.list-sidebar{border-right:1px solid var(--border);padding-right:16px;max-height:750px;overflow-y:auto}
+.sidebar-item{padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;cursor:pointer;background:var(--bg-card);transition:all 0.15s;}
+.sidebar-item:hover, .sidebar-item.active{background:var(--green-light);border-color:var(--green)}
+
+/* Estilos de Impresión / PDF Oficial */
+#reportePDF{font-family:'Segoe UI',sans-serif;color:#1A1208;background:#fff}
+.rep-header{display:flex;justify-content:space-between;border-bottom:2px solid #1A1208;padding-bottom:12px;margin-bottom:20px}
+.rep-info-block{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:25px}
+.rep-info-box{background:#F7F5F0;border:1px solid #E3DEC3;padding:10px;border-radius:6px;text-align:center}
 @media print {
   body > *:not(#reportePDF) { display: none !important; }
-  #reportePDF { display: block !important; padding: 0 !important; }
-  #reportePDF table { display: table !important; width: 100% !important; }
-  #reportePDF thead th { display: table-cell !important; background: #EDE8DF !important; color: #1A1208 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  #reportePDF tbody td { display: table-cell !important; border: 1px solid #DDD5C8 !important; }
-  @page { size: A4; margin: 15mm; }
+  #reportePDF { display: block !important; padding: 20mm !important; }
+  @page { size: A4; margin: 0; }
 }
 </style>
 </head>
 <body>
+
 <div id="app">
-
-<div class="topbar">
-  <div>
-    <div class="topbar-title"><i class="ti ti-school" style="margin-right:6px"></i>Seguimiento Docente Pro</div>
-    <div class="topbar-sub">Estructura Curricular & Gestión de Alumnos Unificada (Local-First)</div>
-  </div>
-  <div class="topbar-actions">
-    <button class="sec-btn" onclick="openModal('configModal')"><i class="ti ti-settings"></i> Estructura Escolar</button>
-  </div>
-</div>
-
-<div class="nav">
-  <button class="nav-btn on" onclick="goTab('resumen',this)">Vista General</button>
-  <button class="nav-btn" onclick="goTab('asistencia',this)">Asistencia</button>
-  <button class="nav-btn" onclick="goTab('notas',this)">Calificaciones</button>
-  <button class="nav-btn" onclick="goTab('observaciones',this)">Bitácora</button>
-</div>
-
-<div class="body">
-
-  <div id="sec-resumen" class="sec on">
-    <div class="row">
-      <select id="repCurso" onchange="renderResumen()"></select>
-      <select id="repPeriodo" onchange="renderResumen()">
-        <option value="1T">1° Trimestre</option>
-        <option value="2T">2° Trimestre</option>
-      </select>
-      <button class="grn" onclick="generarReportePDF()"><i class="ti ti-file-export"></i> Exportar reporte PDF</button>
-    </div>
-    
-    <div class="grid-resumen">
-      <div class="st-card b-blue">
-        <div class="st-num" id="stMatricula">0</div>
-        <div class="st-lbl">Matrícula Total</div>
-      </div>
-      <div class="st-card b-green">
-        <div class="st-num" id="stAsistMed">0%</div>
-        <div class="st-lbl">Asistencia Media</div>
-      </div>
-      <div class="st-card b-red">
-        <div class="st-num" id="stRiesgo">0</div>
-        <div class="st-lbl">Alumnos en Riesgo (&lt;75%)</div>
-      </div>
-      <div class="st-card b-amber">
-        <div class="st-num" id="stObs">0</div>
-        <div class="st-lbl">Observaciones registradas</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">Planilla de Estado de Trayectoria Activa</div>
-      <div class="tw" style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:50px">N°</th>
-              <th>Estudiante</th>
-              <th>Condición</th>
-              <th class="center">Ausencias (Faltas)</th>
-              <th class="center">% Asist.</th>
-              <th class="center">Nota Trimestre</th>
-            </tr>
-          </thead>
-          <tbody id="resumenTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="sec-asistencia" class="sec">
-    <div class="row">
-      <select id="asistCurso" onchange="renderAsistencia()"></select>
-      <select id="asistPeriodo" onchange="renderAsistencia()">
-        <option value="1T">1° Trimestre</option>
-        <option value="2T">2° Trimestre</option>
-      </select>
-      <input type="date" id="asistFecha" onchange="renderAsistencia()" />
-      <button class="sec-btn" id="lblClasesTotales" onclick="cambiarClasesTotalesPrompt()">Clases estimadas: 27</button>
-    </div>
-    <div class="card">
-      <div class="card-head">Control Diario de Presentismo</div>
-      <div class="tw" style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:50px">N°</th>
-              <th>Estudiante</th>
-              <th class="center" style="width:160px">Asistencia</th>
-              <th>Estado de Regularidad</th>
-            </tr>
-          </thead>
-          <tbody id="asistTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="sec-notas" class="sec">
-    <div class="row">
-      <select id="notasCurso" onchange="renderNotas()"></select>
-      <select id="notasPeriodo" onchange="renderNotas()">
-        <option value="1T">1° Trimestre</option>
-        <option value="2T">2° Trimestre</option>
-      </select>
-    </div>
-    <div class="card">
-      <div class="card-head">Planilla de Registro Evaluativo Cualitativo y Cuatrimestral</div>
-      <div class="tw" style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:50px">N°</th>
-              <th>Estudiante</th>
-              <th class="center">N1 (Cuali)</th>
-              <th class="center">N2 (Cuali)</th>
-              <th class="center">N3 (Cuali)</th>
-              <th class="center" style="width:100px">Nota Final (Numérica)</th>
-            </tr>
-          </thead>
-          <tbody id="notasTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="sec-observaciones" class="sec">
-    <div class="row">
-      <select id="obsCurso" onchange="cambiarCursoObs()"></select>
-      <select id="obsAlumno"></select>
-      <select id="obsTipo">
-        <option value="Pedagógica">Pedagógica</option>
-        <option value="Conducta">Conducta</option>
-        <option value="Asistencia">Asistencia</option>
-        <option value="Médica">Médica</option>
-      </select>
-      <button class="grn" onclick="agregarObservacion()"><i class="ti ti-plus"></i> Guardar Nota</button>
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-head">Nueva anotación de campo cualitativa</div>
-      <textarea id="obsTexto" rows="2" placeholder="Escriba aquí los detalles del desempeño, alertas, entrevistas o incidentes observados..."></textarea>
-    </div>
-    <div class="card">
-      <div class="card-head">Historial Cronológico del Aula</div>
-      <div id="obsListContenedor"></div>
-    </div>
-  </div>
-
-</div>
-
-<div id="configModal" class="modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div>⚙️ Configuración Institucional</div>
-      <button class="sec-btn" style="padding:4px 8px" onclick="closeModal('configModal')">✕</button>
-    </div>
-    
-    <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
-      <div style="font-weight:600;margin-bottom:6px;font-size:11px;color:var(--ink2)">NUEVA INSTITUCIÓN / ESCUELA</div>
-      <div class="row" style="margin-bottom:0">
-        <input type="text" id="cfgEscNombre" placeholder="Nombre de la escuela (Ej: Escuela 753)" style="flex:1" />
-        <button class="grn" onclick="crearEscuela()"><i class="ti ti-plus"></i> Añadir</button>
-      </div>
-    </div>
-
-    <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
-      <div style="font-weight:600;margin-bottom:6px;font-size:11px;color:var(--ink2)">NUEVA MATERIA EN ESCUELA SELECCIONADA</div>
-      <div class="row" style="margin-bottom:6px">
-        <select id="cfgMateriaEscRef" style="flex:1"></select>
-      </div>
-      <div class="row" style="margin-bottom:0">
-        <input type="text" id="cfgMatNombre" placeholder="Materia (Ej: Economía)" style="flex:1" />
-        <button class="bl" onclick="crearMateria()"><i class="ti ti-plus"></i> Vincular</button>
-      </div>
-    </div>
-
-    <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px">
-      <div style="font-weight:600;margin-bottom:6px;font-size:11px;color:var(--ink2)">NUEVO CURSO / DIVISIÓN EN MATERIA</div>
-      <div class="row" style="margin-bottom:6px">
-        <select id="cfgCursoMatRef" style="flex:1"></select>
-      </div>
-      <div class="row" style="margin-bottom:0">
-        <input type="text" id="cfgCursoNombre" placeholder="Curso (Ej: Módulo II A)" style="flex:1" />
-        <input type="text" id="cfgCursoHorario" placeholder="Horario (Ej: Lun 18-20hs)" style="width:130px" />
-        <button class="amb" onclick="crearCurso()"><i class="ti ti-plus"></i> Abrir</button>
-      </div>
-    </div>
-
+  <div class="topbar">
     <div>
-      <div style="font-weight:600;margin-bottom:8px;font-size:11px;color:var(--ink2)">ÁRBOL DE COMPONENTES VIGENTES</div>
-      <div id="cfgListaCompleta" style="max-height:180px;overflow-y:auto"></div>
+      <div class="topbar-title"><i class="ti ti-school"></i> Gestión Docente Unificada</div>
+      <div class="topbar-sub">Seguimiento Integrado de Secuencias, Evaluaciones Diarias y Bitácora Cualitativa</div>
     </div>
   </div>
-</div>
 
-<div id="reportePDF" style="display:none; padding:30px; background:#fff;">
-  <div id="reporteContenido"></div>
-</div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('dashboard', this)"><i class="ti ti-chart"></i> Vista General</button>
+    <button class="tab-btn" onclick="switchTab('escuelas', this)"><i class="ti ti-school"></i> Gestión Escuelas</button>
+    <button class="tab-btn" onclick="switchTab('alumnos', this)"><i class="ti ti-users"></i> Gestión Alumnos</button>
+    <button class="tab-btn" onclick="switchTab('asistencia', this)"><i class="ti ti-calendar"></i> Asistencia Diaria</button>
+    <button class="tab-btn" onclick="switchTab('cuaderno-aula', this)"><i class="ti ti-book"></i> Cuaderno de Aula Integrado</button>
+  </div>
 
+  <div class="content-body">
+    
+    <div id="panel-dashboard" class="tab-panel active">
+      <div class="row">
+        <select id="dashCurso" onchange="renderDashboard()"></select>
+        <button class="warning" onclick="generarReportePDF()"><i class="ti ti-file-pdf"></i> Exportar Informe de Trayectoria Completo (PDF)</button>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="stat-card bg-blue">
+          <div class="stat-value" id="lblMatricula">0</div>
+          <div class="stat-label">Estudiantes Matriculados</div>
+        </div>
+        <div class="stat-card bg-green">
+          <div class="stat-value" id="lblAsistencia">0%</div>
+          <div class="stat-label">Asistencia Media Promedio</div>
+        </div>
+        <div class="stat-card bg-red">
+          <div class="stat-value" id="lblRiesgo">0</div>
+          <div class="stat-label">Alumnos en Riesgo Alerta</div>
+        </div>
+        <div class="stat-card bg-amber">
+          <div class="stat-value" id="lblTareas">0</div>
+          <div class="stat-label">Clases / Secuencias Registradas</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Resumen Analítico y Sabana Cualitativa de Rendimiento</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px">N°</th>
+                <th>Estudiante</th>
+                <th>Condición</th>
+                <th class="center">Faltas Acum.</th>
+                <th class="center">% Asist.</th>
+                <th class="center">Promedio Actividades</th>
+                <th class="center">Últimas Notas Cuali / Observaciones de Aula</th>
+              </tr>
+            </thead>
+            <tbody id="dashTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-escuelas" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Configuración de Estructuras Institucionales</div>
+        <div class="row">
+          <input type="text" id="escNumero" placeholder="N° o Nombre Escuela (Ej: 753)" />
+          <input type="text" id="escMateria" placeholder="Materia (Ej: Economía)" />
+          <input type="text" id="escCurso" placeholder="Curso/División (Ej: 4to II)" />
+          <input type="text" id="escHorario" placeholder="Horario (Ej: Lun 18-20hs)" />
+          <select id="escCiclo">
+            <option value="Anual">Régimen Anual</option>
+            <option value="Cuatrimestral">Régimen Cuatrimestral</option>
+          </select>
+          <button class="success" onclick="agregarEstructura()"><i class="ti ti-plus"></i> Dar de Alta Escuela</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Mis Espacios Curriculares Abiertos</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Escuela / Institución</th>
+                <th>Espacio Curricular (Materia)</th>
+                <th>Curso / División</th>
+                <th>Horario Designado</th>
+                <th>Ciclo Académico</th>
+                <th style="width:80px" class="center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="escuelasTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-alumnos" class="tab-panel">
+      <div class="row">
+        <select id="aluCursoFiltro" onchange="renderAlumnos()"></select>
+      </div>
+      <div class="card">
+        <div class="card-title">Matriculación y Registro de Estudiantes</div>
+        <div class="row">
+          <input type="text" id="aluNombre" placeholder="Apellido y Nombre del estudiante" style="flex:1" />
+          <select id="aluCondicion">
+            <option value="Regular">Regular</option>
+            <option value="Condicional">Condicional</option>
+            <option value="Libre">Libre</option>
+          </select>
+          <button class="success" onclick="agregarAlumno()"><i class="ti ti-plus"></i> Matricular Alumno</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Nómina del Curso Activo</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:60px">N° Orden</th>
+                <th>Apellido y Nombre</th>
+                <th>Condición Matriculada</th>
+                <th style="width:80px" class="center">Remover</th>
+              </tr>
+            </thead>
+            <tbody id="alumnosTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-asistencia" class="tab-panel">
+      <div class="row">
+        <select id="asistCurso" onchange="renderAsistencia()"></select>
+        <input type="date" id="asistFecha" onchange="renderAsistencia()" />
+      </div>
+      <div class="card">
+        <div class="card-title">Toma de Presentismo Diario</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:60px">N°</th>
+                <th>Estudiante</th>
+                <th class="center" style="width:180px">Estado de Asistencia</th>
+                <th>Progreso Relativo</th>
+              </tr>
+            </thead>
+            <tbody id="asistTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-cuaderno-aula" class="tab-panel">
+      <div class="row">
+        <select id="cuadCurso" onchange="renderCuaderno()"></select>
+      </div>
+
+      <div class="planif-layout">
+        <div class="list-sidebar">
+          <button class="success" style="width:100%; margin-bottom:12px;" onclick="nuevaClaseCuaderno()"><i class="ti ti-plus"></i> Registrar Nueva Clase</button>
+          <div id="sidebarClasesItems"></div>
+        </div>
+        
+        <div style="display:none;" id="zonaEdicionClase">
+          
+          <div class="card" style="background:#FAF9F5; border-color:var(--border-focus);">
+            <div class="card-title">📖 Secuencia Didáctica e Información del Día</div>
+            <div class="row">
+              <input type="text" id="clTitulo" placeholder="Tema principal de la clase (Ej: Liquidación de SAC)" style="flex:1;" onchange="autoGuardarEncabezado()" />
+              <input type="date" id="clFecha" onchange="autoGuardarEncabezado()" />
+              <input type="number" id="clPonderacion" placeholder="Ponderación % (1-100)" style="width:110px;" title="Importancia de la actividad de hoy" onchange="autoGuardarEncabezado()" />
+            </div>
+            <div>
+              <textarea id="clRelatoria" rows="4" placeholder="Planificación corta, secuencia didáctica de hoy o relatoría general del grupo..." onchange="autoGuardarEncabezado()"></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">👥 Registro Individual: Impacto de Actividades, Calificación y Bitácora Cualitativa</div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:50px;">N°</th>
+                    <th style="width:200px;">Estudiante</th>
+                    <th style="width:130px;" class="center">Calificación (Cuali/Num)</th>
+                    <th>Observación Cualitativa Específica de esta Clase</th>
+                  </tr>
+                </thead>
+                <tbody id="cuadernoAlumnosTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="row style=row-end">
+            <button class="success" onclick="alert('¡Todos los datos de la clase, notas y bitácora se guardaron automáticamente!')"><i class="ti ti-save"></i> Forzar Guardado General</button>
+            <button class="danger" onclick="eliminarClaseActual()"><i class="ti ti-trash"></i> Eliminar Registro de esta Clase</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="reportePDF" style="display:none; padding:25px;">
+    <div id="reporteContenido"></div>
+  </div>
 </div>
 
 <script>
 // ========================================================
-// MOTOR LOCAL-FIRST COMPLETO DE ALTA VELOCIDAD
+// MOTOR CENTRAL LOCAL-FIRST (PERSISTENCIA TOTAL DE DATOS)
 // ========================================================
-const S_KEY = "SISTEMA_DOCENTE_TRAYECTORIAS_V1";
+const STORAGE_KEY = "SISTEMA_DOCENTE_INTEGRADO_V3";
 
-window.escuelas = [];
-window.alumnos = {};
-window.asistencias = {};
-window.calificaciones = {};
-window.observaciones = [];
+window.cursos = []; 
+window.alumnos = {}; 
+window.asistencias = {}; 
+window.clases = []; // Contiene {id, cursoId, titulo, fecha, ponderacion, relatoria, notas: {alId: ''}, observaciones: {alId: ''}}
 
-function guardarDatos() {
-  const comp = { escuelas, alumnos, asistencias, calificaciones, observaciones };
-  localStorage.setItem(S_KEY, JSON.stringify(comp));
+window.claseSeleccionadaId = null;
+
+function guardarTodo() {
+  const data = { cursos, alumnos, asistencias, clases };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-function cargarDatos() {
-  const raw = localStorage.getItem(S_KEY);
+function cargarTodo() {
+  const raw = localStorage.getItem(STORAGE_KEY);
   if(!raw) return false;
   try {
     const parse = JSON.parse(raw);
-    window.escuelas = parse.escuelas || [];
+    window.cursos = parse.cursos || [];
     window.alumnos = parse.alumnos || {};
     window.asistencias = parse.asistencias || {};
-    window.calificaciones = parse.calificaciones || {};
-    window.observaciones = parse.observaciones || [];
+    window.clases = parse.clases || [];
     return true;
   } catch(e) {
     return false;
   }
 }
 
-// Inicializar selectores dinámicos cruzados
-function sincronizarSelectores() {
-  const sRep = document.getElementById('repCurso');
-  const sAsist = document.getElementById('asistCurso');
-  const sNot = document.getElementById('notasCurso');
-  const sObs = document.getElementById('obsCurso');
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   
-  const sCfgEsc = document.getElementById('cfgMateriaEscRef');
-  const sCfgMat = document.getElementById('cfgCursoMatRef');
+  document.getElementById('panel-' + tabId).classList.add('active');
+  if(btn) btn.classList.add('active');
 
-  const cacheRep = sRep.value;
-  const cacheAsist = sAsist.value;
-  const cacheNot = sNot.value;
-  const cacheObs = sObs.value;
+  if(tabId === 'dashboard') renderDashboard();
+  if(tabId === 'escuelas') renderEscuelas();
+  if(tabId === 'alumnos') renderAlumnos();
+  if(tabId === 'asistencia') renderAsistencia();
+  if(tabId === 'cuaderno-aula') renderCuaderno();
+}
 
-  sRep.innerHTML = ''; sAsist.innerHTML = ''; sNot.innerHTML = ''; sObs.innerHTML = '';
-  sCfgEsc.innerHTML = ''; sCfgMat.innerHTML = '';
-
-  escuelas.forEach(e => {
-    const oE = document.createElement('option'); oE.value = e.id; oE.textContent = e.nombre;
-    sCfgEsc.appendChild(oE);
-
-    (e.materias || []).forEach(m => {
-      const oM = document.createElement('option'); oM.value = `${e.id}|${m.id}`; oM.textContent = `${e.nombre} -> ${m.nombre}`;
-      sCfgMat.appendChild(oM);
-
-      (m.cursos || []).forEach(c => {
-        const createOpt = () => {
-          const opt = document.createElement('option');
-          const hLbl = c.horario ? ` [${c.horario}]` : '';
-          opt.value = c.id; opt.textContent = `${e.nombre} · ${m.nombre} [${c.nombre}]${hLbl}`;
-          return opt;
-        };
-        sRep.appendChild(createOpt());
-        sAsist.appendChild(createOpt());
-        sNot.appendChild(createOpt());
-        sObs.appendChild(createOpt());
-      });
-    });
+function sincronizarSelectoresCursos() {
+  const selectores = ['dashCurso', 'aluCursoFiltro', 'asistCurso', 'cuadCurso'];
+  const cacheValores = {};
+  
+  selectores.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) cacheValores[id] = el.value;
   });
 
-  if(cacheRep) sRep.value = cacheRep;
-  if(cacheAsist) sAsist.value = cacheAsist;
-  if(cacheNot) sNot.value = cacheNot;
-  if(cacheObs) sObs.value = cacheObs;
-}
-
-// Auxiliares de Métricas y Asistencias
-function getAbsencias(cid, alid) {
-  const pool = asistencias[cid] || {};
-  let A = 0, T = 0, P = 0;
-  for(let f in pool) {
-    if(pool[f] && pool[f][alid]) {
-      if(pool[f][alid] === 'A') A++;
-      if(pool[f][alid] === 'T') T++;
-      if(pool[f][alid] === 'P') P++;
+  selectores.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = '';
+    cursos.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `Esc. ${c.escuela} — ${c.materia} [${c.nombre}] (${c.ciclo})`;
+      el.appendChild(opt);
+    });
+    if(cacheValores[id] && el.querySelector(`option[value="${cacheValores[id]}"]`)) {
+      el.value = cacheValores[id];
     }
-  }
-  return { A, T, P };
+  });
 }
 
-function getClasesTotales(cid, periodo) {
-  for (let e of escuelas) {
-    for (let m of e.materias) {
-      let c = m.cursos.find(x => x.id === cid);
-      if (c) return (c.clasesTotales && c.clasesTotales[periodo]) ? c.clasesTotales[periodo] : 27;
-    }
-  }
-  return 27;
+// --- ETIQUETA GESTIÓN ESCUELAS ---
+function agregarEstructura() {
+  const esc = document.getElementById('escNumero').value.trim();
+  const mat = document.getElementById('escMateria').value.trim();
+  const cur = document.getElementById('escCurso').value.trim();
+  const hor = document.getElementById('escHorario').value.trim();
+  const cic = document.getElementById('escCiclo').value;
+
+  if(!esc || !mat || !cur) { alert("Por favor complete los campos de Escuela, Materia y Curso."); return; }
+
+  const nuevoCurso = { id: 'c_' + Date.now(), escuela: esc, materia: mat, nombre: cur, horario: hor, ciclo: cic };
+  cursos.push(nuevoCurso);
+  alumnos[nuevoCurso.id] = [];
+
+  document.getElementById('escNumero').value = '';
+  document.getElementById('escMateria').value = '';
+  document.getElementById('escCurso').value = '';
+  document.getElementById('escHorario').value = '';
+
+  guardarTodo();
+  sincronizarSelectoresCursos();
+  renderEscuelas();
 }
 
-function getPct(cid, alid) {
-  const p = document.getElementById('repPeriodo')?.value || '1T';
-  const tot = getClasesTotales(cid, p);
-  const ab = getAbsencias(cid, alid);
-  const faltas = ab.A + (ab.T * 0.5);
-  if(tot <= 0) return 100;
-  let pct = Math.round(((tot - faltas) / tot) * 100);
-  return pct < 0 ? 0 : pct;
-}
-
-function getNF(cid, alid, p) {
-  if(!calificaciones[cid] || !calificaciones[cid][alid]) return '';
-  return calificaciones[cid][alid][p] ? calificaciones[cid][alid][p].final : '';
-}
-
-// Navegación de pestañas
-function goTab(id, btn) {
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-  document.getElementById('sec-' + id).classList.add('on');
-  if(btn) btn.classList.add('on');
-  
-  if(id === 'resumen') renderResumen();
-  if(id === 'asistencia') renderAsistencia();
-  if(id === 'notes' || id === 'notas') renderNotas();
-  if(id === 'observaciones') cambiarCursoObs();
-}
-
-// RENDERS DE SECCIONES
-function renderResumen() {
-  const cid = document.getElementById('repCurso').value;
-  const p = document.getElementById('repPeriodo').value;
-  const tbody = document.getElementById('resumenTableBody');
-  
-  if(!cid) { tbody.innerHTML = `<tr><td colspan="6" class="empty">Cree una escuela y curso en configuraciones para comenzar.</td></tr>`; return; }
-  
-  const list = alumnos[cid] || [];
+function renderEscuelas() {
+  const tbody = document.getElementById('escuelasTableBody');
   let html = '';
-  let sumPct = 0, riesgo = 0;
-
-  list.forEach(al => {
-    const pct = getPct(cid, al.id);
-    sumPct += pct;
-    if(pct < 75) riesgo++;
-
-    const abs = getAbsencias(cid, al.id);
-    const faltas = abs.A + (abs.T * 0.5);
-    const nf = getNF(cid, al.id, p);
-
-    let bC = 'b-green';
-    if(pct < 85) bC = 'b-amber';
-    if(pct < 75) bC = 'b-red';
-
+  cursos.forEach(c => {
     html += `<tr>
-      <td>${al.num}</td>
-      <td><strong>${al.nombre}</strong></td>
-      <td><span class="badge b-blue">${al.cond || 'Regular'}</span></td>
-      <td class="center" style="font-weight:600">${faltas}</td>
-      <td class="center"><span class="badge ${bC}">${pct}%</span></td>
-      <td class="center"><span class="badge b-blue" style="font-size:12px">${nf || '-'}</span></td>
+      <td><strong>Escuela N° ${c.escuela}</strong></td>
+      <td>${c.materia}</td>
+      <td><span class="badge bg-blue">${c.nombre}</span></td>
+      <td>${c.horario || 'No definido'}</td>
+      <td><span class="badge bg-amber">${c.ciclo}</span></td>
+      <td class="center"><button class="danger" style="padding:4px 8px;" onclick="eliminarEscuela('${c.id}')"><i class="ti ti-trash"></i></button></td>
     </tr>`;
   });
-
-  tbody.innerHTML = html || `<tr><td colspan="6" class="empty">No hay alumnos cargados en este curso.</td></tr>`;
-  
-  document.getElementById('stMatricula').textContent = list.length;
-  document.getElementById('stAsistMed').textContent = list.length ? Math.round(sumPct / list.length) + '%' : '100%';
-  document.getElementById('stRiesgo').textContent = riesgo;
-  document.getElementById('stObs').textContent = observaciones.filter(o => o.cursoId === cid).length;
+  tbody.innerHTML = html || `<tr><td colspan="6" class="center">No hay escuelas o materias registradas aún.</td></tr>`;
 }
 
-function renderAsistencia() {
-  const cid = document.getElementById('asistCurso').value;
-  const p = document.getElementById('asistPeriodo').value;
-  const f = document.getElementById('asistFecha').value;
-  const tbody = document.getElementById('asistTableBody');
-  
-  if(!cid) return;
-  document.getElementById('lblClasesTotales').textContent = `Clases estimadas: ${getClasesTotales(cid, p)}`;
-  if(!f) return;
+function eliminarEscuela(id) {
+  if(confirm("¿Está seguro de eliminar esta institución? Se perderán todos sus alumnos, asistencias, cuadernos y notas vinculadas.")) {
+    cursos = cursos.filter(c => c.id !== id);
+    delete alumnos[id];
+    delete asistencias[id];
+    clases = clases.filter(cl => cl.cursoId !== id);
+    guardarTodo();
+    sincronizarSelectoresCursos();
+    renderEscuelas();
+  }
+}
 
-  if(!asistencias[cid]) asistencias[cid] = {};
-  if(!asistencias[cid][f]) asistencias[cid][f] = {};
+// --- ETIQUETA GESTIÓN ALUMNOS ---
+function agregarAlumno() {
+  const cId = document.getElementById('aluCursoFiltro').value;
+  const nom = document.getElementById('aluNombre').value.trim();
+  const cond = document.getElementById('aluCondicion').value;
 
-  const list = alumnos[cid] || [];
+  if(!cId) { alert("Primero cree una Escuela / Curso en la pestaña correspondiente."); return; }
+  if(!nom) { alert("Ingrese el nombre completo del estudiante."); return; }
+
+  if(!alumnos[cId]) alumnos[cId] = [];
+  const nuevoNum = alumnos[cId].length + 1;
+
+  alumnos[cId].push({ id: 'al_' + Date.now(), num: nuevoNum, nombre: nom, cond: cond });
+  document.getElementById('aluNombre').value = '';
+
+  guardarTodo();
+  renderAlumnos();
+}
+
+function renderAlumnos() {
+  const cId = document.getElementById('aluCursoFiltro').value;
+  const tbody = document.getElementById('alumnosTableBody');
+  if(!cId) { tbody.innerHTML = `<tr><td colspan="4" class="center">Seleccione o cree un curso primero.</td></tr>`; return; }
+
+  const lista = alumnos[cId] || [];
   let html = '';
-  
-  list.forEach(al => {
-    const current = asistencias[cid][f][al.id] || 'P';
-    const pct = getPct(cid, al.id);
+  lista.forEach((al, idx) => {
+    al.num = idx + 1; 
+    let bClass = al.cond === 'Regular' ? 'bg-green' : (al.cond === 'Condicional' ? 'bg-amber' : 'bg-red');
+    html += `<tr>
+      <td class="center">${al.num}</td>
+      <td><strong>${al.nombre}</strong></td>
+      <td><span class="badge ${bClass}">${al.cond}</span></td>
+      <td class="center"><button class="danger" style="padding:4px 8px" onclick="eliminarAlumno('${cId}','${al.id}')">✕</button></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html || `<tr><td colspan="4" class="center">No hay alumnos matriculados en esta sección.</td></tr>`;
+}
+
+function eliminarAlumno(cId, alId) {
+  if(confirm("¿Remover estudiante de la nómina?")) {
+    alumnos[cId] = alumnos[cId].filter(a => a.id !== alId);
+    guardarTodo();
+    renderAlumnos();
+  }
+}
+
+// --- ETIQUETA ASISTENCIA DIARIA ---
+function renderAsistencia() {
+  const cId = document.getElementById('asistCurso').value;
+  const fecha = document.getElementById('asistFecha').value;
+  const tbody = document.getElementById('asistTableBody');
+  if(!cId || !fecha) return;
+
+  if(!asistencias[cId]) asistencias[cId] = {};
+  if(!asistencias[cId][fecha]) asistencias[cId][fecha] = {};
+
+  const listaAl = alumnos[cId] || [];
+  let html = '';
+
+  listaAl.forEach(al => {
+    const estado = asistencias[cId][fecha][al.id] || 'P';
+    const metricas = calcularAsistenciaAlumno(cId, al.id);
 
     html += `<tr>
-      <td>${al.num}</td>
+      <td class="center">${al.num}</td>
       <td><strong>${al.nombre}</strong></td>
       <td class="center">
-        <div class="btn-grid">
-          <button class="bg-btn ${current==='P'?'on-p':''}" onclick="setAsist('${cid}','${f}','${al.id}','P')">P</button>
-          <button class="bg-btn ${current==='A'?'on-a':''}" onclick="setAsist('${cid}','${f}','${al.id}','A')">A</button>
-          <button class="bg-btn ${current==='T'?'on-t':''}" onclick="setAsist('${cid}','${f}','${al.id}','T')">T</button>
-        </div>
+        <select onchange="cambiarAsistenciaEstado('${cId}','${fecha}','${al.id}',this.value)" style="padding:4px 8px;">
+          <option value="P" ${estado==='P'?'selected':''}>Presente (P)</option>
+          <option value="A" ${estado==='A'?'selected':''}>Ausente (A)</option>
+          <option value="T" ${estado==='T'?'selected':''}>Tarde (T)</option>
+        </select>
       </td>
-      <td>Asistencia acumulada: <span style="font-weight:600">${pct}%</span></td>
+      <td>Faltas acumuladas: <span style="font-weight:700">${metricas.faltas}</span> — Porcentaje: <span class="badge ${metricas.porcentaje < 75 ? 'bg-red':'bg-green'}">${metricas.porcentaje}%</span></td>
     </tr>`;
   });
 
-  tbody.innerHTML = html || `<tr><td colspan="4" class="empty">Sin matrícula disponible.</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="4" class="center">Matrícula vacía.</td></tr>`;
 }
 
-function setAsist(cid, f, alid, val) {
-  asistencias[cid][f][alid] = val;
-  guardarDatos();
-  renderAsistencia();
+function cambiarAsistenciaEstado(cId, fecha, alId, valor) {
+  asistencias[cId][fecha][alId] = valor;
+  guardarTodo();
 }
 
-function cambiarClasesTotalesPrompt() {
-  const cid = document.getElementById('asistCurso').value;
-  const p = document.getElementById('asistPeriodo').value;
-  if(!cid) return;
-  const n = prompt("Ingrese la cantidad de clases totales dictadas o estimadas para este trimestre:", getClasesTotales(cid, p));
-  if(n && !isNaN(n)) {
-    escuelas.forEach(e => {
-      e.materias.forEach(m => {
-        let c = m.cursos.find(x => x.id === cid);
-        if(c) {
-          if(!c.clasesTotales) c.clasesTotales = {};
-          c.clasesTotales[p] = parseInt(n);
-        }
-      });
-    });
-    guardarDatos();
-    renderAsistencia();
+function calcularAsistenciaAlumno(cId, alId) {
+  const registros = asistencias[cId] || {};
+  let clasesDictadas = Object.keys(registros).length || 27; 
+  if(clasesDictadas === 0) clasesDictadas = 27;
+
+  let A = 0, T = 0;
+  for(let f in registros) {
+    if(registros[f][alId] === 'A') A++;
+    if(registros[f][alId] === 'T') T++;
   }
+  const faltas = A + (T * 0.5);
+  let pct = Math.round(((clasesDictadas - faltas) / clasesDictadas) * 100);
+  if(pct < 0) pct = 0;
+  return { faltas, porcentaje: pct };
 }
 
-function renderNotas() {
-  const cid = document.getElementById('notasCurso').value;
-  const p = document.getElementById('notasPeriodo').value;
-  const tbody = document.getElementById('notasTableBody');
-  if(!cid) return;
 
-  if(!calificaciones[cid]) calificaciones[cid] = {};
+// ========================================================
+// NUEVA LOGICA: CUADERNO DE AULA INTEGRADO RELACIONAL
+// ========================================================
+function renderCuaderno() {
+  const cId = document.getElementById('cuadCurso').value;
+  const sidebar = document.getElementById('sidebarClasesItems');
+  const zonaEdicion = document.getElementById('zonaEdicionClase');
+  
+  zonaEdicion.style.display = 'none';
+  if(!cId) { sidebar.innerHTML = ''; return; }
 
-  const list = alumnos[cid] || [];
+  const filtradas = clases.filter(cl => cl.cursoId === cId).sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
   let html = '';
 
-  list.forEach(al => {
-    if(!calificaciones[cid][al.id]) calificaciones[cid][al.id] = {};
-    if(!calificaciones[cid][al.id][p]) calificaciones[cid][al.id][p] = { n1:'', n2:'', n3:'', final:'' };
-    
-    const d = calificaciones[cid][al.id][p];
-
-    html += `<tr>
-      <td>${al.num}</td>
-      <td><strong>${al.nombre}</strong></td>
-      <td class="center"><input type="text" class="ni" value="${d.n1}" onchange="setNota('${cid}','${al.id}','${p}','n1',this.value)" placeholder="-" /></td>
-      <td class="center"><input type="text" class="ni" value="${d.n2}" onchange="setNota('${cid}','${al.id}','${p}','n2',this.value)" placeholder="-" /></td>
-      <td class="center"><input type="text" class="ni" value="${d.n3}" onchange="setNota('${cid}','${al.id}','${p}','n3',this.value)" placeholder="-" /></td>
-      <td class="center"><input type="number" class="ni ni-p" min="1" max="10" value="${d.final}" onchange="setNota('${cid}','${al.id}','${p}','final',this.value)" placeholder="-" /></td>
-    </tr>`;
-  });
-
-  tbody.innerHTML = html || `<tr><td colspan="6" class="empty">Sin matrícula para calificar.</td></tr>`;
-}
-
-function setNota(cid, alid, p, campo, val) {
-  calificaciones[cid][alid][p][campo] = val;
-  guardarDatos();
-}
-
-// CONTROL DE BITÁCORA
-function cambiarCursoObs() {
-  const cid = document.getElementById('obsCurso').value;
-  const sAl = document.getElementById('obsAlumno');
-  sAl.innerHTML = '<option value="general">[Todo el Grupo General]</option>';
-  
-  if(!cid) { renderListaObservaciones(); return; }
-
-  (alumnos[cid] || []).forEach(al => {
-    const o = document.createElement('option'); o.value = al.id; o.textContent = al.nombre;
-    sAl.appendChild(o);
-  });
-
-  renderListaObservaciones();
-}
-
-function agregarObservacion() {
-  const cid = document.getElementById('obsCurso').value;
-  const alid = document.getElementById('obsAlumno').value;
-  const tipo = document.getElementById('obsTipo').value;
-  const txt = document.getElementById('obsTexto').value.trim();
-
-  if(!cid || !txt) { alert("Complete el texto de la bitácora."); return; }
-
-  observaciones.push({
-    id: 'obs_' + Date.now(),
-    cursoId: cid,
-    alumnoId: alid,
-    tipo,
-    texto: txt,
-    fecha: new Date().toISOString().split('T')[0]
-  });
-
-  document.getElementById('obsTexto').value = '';
-  guardarDatos();
-  renderListaObservaciones();
-}
-
-function renderListaObservaciones() {
-  const cid = document.getElementById('obsCurso').value;
-  const contenedor = document.getElementById('obsListContenedor');
-  
-  const filtradas = observaciones.filter(o => o.cursoId === cid);
-  let html = '';
-
-  [...filtradas].reverse().forEach(o => {
-    let target = "General";
-    if(o.alumnoId !== 'general' && alumnos[cid]) {
-      const f = alumnos[cid].find(x => x.id == o.alumnoId);
-      if(f) target = f.nombre;
-    }
-
-    html += `<div class="obs-row">
-      <div>
-        <div class="obs-txt"><strong>${target}</strong>: ${o.texto}</div>
-        <div class="obs-meta">Fecha: ${o.fecha.split('-').reverse().join('/')} · <span class="badge b-amber">${o.tipo}</span></div>
-      </div>
-      <button class="red" style="padding:2px 6px; font-size:10px" onclick="borrarObs('${o.id}')">✕</button>
+  filtradas.forEach(cl => {
+    let actClass = window.claseSeleccionadaId === cl.id ? 'active' : '';
+    html += `<div class="sidebar-item ${actClass}" onclick="seleccionarClaseCuaderno('${cl.id}')">
+      <strong>📅 ${cl.fecha.split('-').reverse().join('/')}</strong>
+      <div style="font-size:11px; font-weight:600; color:var(--accent); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${cl.titulo}</div>
     </div>`;
   });
 
-  contenedor.innerHTML = html || `<div class="empty">Sin anotaciones de campo guardadas en este espacio.</div>`;
+  sidebar.innerHTML = html || '<div class="center" style="padding:15px; color:var(--ink-light)">No hay clases registradas. Presione "Registrar Nueva Clase".</div>';
 }
 
-function borrarObs(id) {
-  window.observaciones = observaciones.filter(o => o.id !== id);
-  guardarDatos();
-  renderListaObservaciones();
+function nuevaClaseCuaderno() {
+  const cId = document.getElementById('cuadCurso').value;
+  if(!cId) { alert("Seleccione un curso primero."); return; }
+
+  const nueva = {
+    id: 'cl_' + Date.now(),
+    cursoId: cId,
+    titulo: 'Clase Nueva / Tema del Día',
+    fecha: new Date().toISOString().split('T')[0],
+    ponderacion: 10,
+    relatoria: '',
+    notas: {},          // { alumnoId: 'nota' }
+    observaciones: {}   // { alumnoId: 'observacion cualitativa' }
+  };
+
+  clases.push(nueva);
+  window.claseSeleccionadaId = nueva.id;
+  guardarTodo();
+  renderCuaderno();
+  seleccionarClaseCuaderno(nueva.id);
 }
 
-// LOGICA DE RECONSTRUCCIÓN DE ESTRUCTURAS ESCOLARES (ALTAS)
-function openModal(id) {
-  if (id === 'configModal') renderEscuelasList();
-  const m = document.getElementById(id);
-  if(m) m.classList.add('on');
+function seleccionarClaseCuaderno(id) {
+  window.claseSeleccionadaId = id;
+  const cl = clases.find(x => x.id === id);
+  if(!cl) return;
+
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+
+  document.getElementById('zonaEdicionClase').style.display = 'block';
+  document.getElementById('clTitulo').value = cl.titulo;
+  document.getElementById('clFecha').value = cl.fecha;
+  document.getElementById('clPonderacion').value = cl.ponderacion;
+  document.getElementById('clRelatoria').value = cl.relatoria;
+
+  renderTablaAlumnosClase(cl);
 }
 
-function closeModal(id) {
-  const m = document.getElementById(id);
-  if(m) m.classList.remove('on');
-}
+function renderTablaAlumnosClase(cl) {
+  const tbody = document.getElementById('cuadernoAlumnosTableBody');
+  const listaAl = alumnos[cl.cursoId] || [];
 
-function crearEscuela() {
-  const n = document.getElementById('cfgEscNombre').value.trim();
-  if(!n) return;
-  escuelas.push({ id: 'esc_' + Date.now(), nombre: n, materias: [] });
-  document.getElementById('cfgEscNombre').value = '';
-  guardarDatos(); sincronizarSelectores(); renderEscuelasList();
-}
-
-function crearMateria() {
-  const escId = document.getElementById('cfgMateriaEscRef').value;
-  const n = document.getElementById('cfgMatNombre').value.trim();
-  if(!escId || !n) return;
-  const esc = escuelas.find(x => x.id === escId);
-  if(esc) {
-    esc.materias.push({ id: 'mat_' + Date.now(), nombre: n, cursos: [] });
-    document.getElementById('cfgMatNombre').value = '';
-    guardarDatos(); sincronizarSelectores(); renderEscuelasList();
-  }
-}
-
-function crearCurso() {
-  const composite = document.getElementById('cfgCursoMatRef').value;
-  const n = document.getElementById('cfgCursoNombre').value.trim();
-  const h = document.getElementById('cfgCursoHorario').value.trim();
-  if(!composite || !n) return;
-  
-  const [escId, matId] = composite.split('|');
-  const esc = escuelas.find(x => x.id === escId);
-  const mat = esc ? esc.materias.find(x => x.id === matId) : null;
-  
-  if(mat) {
-    const cId = 'cur_' + Date.now();
-    mat.cursos.push({ id: cId, nombre: n, horario: h, clasesTotales: { '1T': 27, '2T': 27 } });
-    alumnos[cId] = []; // Inicializar matriz vacía para alumnos
-    document.getElementById('cfgCursoNombre').value = '';
-    document.getElementById('cfgCursoHorario').value = '';
-    guardarDatos(); sincronizarSelectores(); renderEscuelasList();
-  }
-}
-
-function renderEscuelasList() {
-  const box = document.getElementById('cfgListaCompleta');
   let html = '';
-  escuelas.forEach(e => {
-    html += `<div class="esc-item">
-      <div style="font-weight:700">🏫 ${e.nombre}</div>`;
-      e.materias.forEach(m => {
-        html += `<div style="margin-left:12px;font-size:11px;color:var(--blue)">📘 Materia: ${m.nombre}</div>`;
-        m.cursos.forEach(c => {
-          const hString = c.horario ? ` — Horario: ${c.horario}` : '';
-          html += `<div style="margin-left:24px;font-size:11px;color:var(--ink2)">🔸 División: ${c.nombre}${hString} <span style="color:var(--green)">(${alumnos[c.id] ? alumnos[c.id].length : 0} al.)</span></div>`;
-        });
-      });
-    html += `</div>`;
+  listaAl.forEach(al => {
+    const nota = cl.notas[al.id] || '';
+    const obs = cl.observaciones[al.id] || '';
+
+    html += `<tr>
+      <td class="center">${al.num}</td>
+      <td><strong>${al.nombre}</strong></td>
+      <td class="center">
+        <input type="text" value="${nota}" placeholder="Cuali/Num" 
+               style="width:90px; text-align:center; padding:5px; font-weight:700;"
+               onchange="autoGuardarFilaAlumno('${cl.id}','${al.id}','nota',this.value)" />
+      </td>
+      <td>
+        <input type="text" value="${obs}" placeholder="Escriba el desempeño cualitativo de hoy..." 
+               style="width:100%; padding:5px;"
+               onchange="autoGuardarFilaAlumno('${cl.id}','${al.id}','obs',this.value)" />
+      </td>
+    </tr>`;
   });
-  box.innerHTML = html || '<div class="empty">Sin escuelas dadas de alta.</div>';
+
+  tbody.innerHTML = html || `<tr><td colspan="4" class="center">No hay alumnos en este curso. Matricúlelos en la pestaña Alumnos.</td></tr>`;
 }
 
-// GENERADOR DINÁMICO DE REPORTE INSTITUCIONAL PDF
-function generarReportePDF() {
-  const cId = document.getElementById('repCurso').value;
-  if (!cId) {
-    alert('Por favor, selecciona un curso válido.');
+function autoGuardarEncabezado() {
+  if(!window.claseSeleccionadaId) return;
+  const cl = clases.find(x => x.id === window.claseSeleccionadaId);
+  if(cl) {
+    cl.titulo = document.getElementById('clTitulo').value.trim() || 'Sin Título';
+    cl.fecha = document.getElementById('clFecha').value;
+    cl.ponderacion = parseInt(document.getElementById('clPonderacion').value) || 0;
+    cl.relatoria = document.getElementById('clRelatoria').value;
+    guardarTodo();
+  }
+}
+
+function autoGuardarFilaAlumno(clId, alId, campo, valor) {
+  const cl = clases.find(x => x.id === clId);
+  if(cl) {
+    if(campo === 'nota') cl.notas[alId] = valor;
+    if(campo === 'obs') cl.observaciones[alId] = valor;
+    guardarTodo();
+  }
+}
+
+function eliminarClaseActual() {
+  if(!window.claseSeleccionadaId) return;
+  if(confirm("¿Eliminar por completo esta clase junto con todas las notas y observaciones de los alumnos cargadas este día?")) {
+    clases = clases.filter(x => x.id !== window.claseSeleccionadaId);
+    window.claseSeleccionadaId = null;
+    guardarTodo();
+    renderCuaderno();
+    document.getElementById('zonaEdicionClase').style.display = 'none';
+  }
+}
+
+// Métricas unificadas para el Dashboard
+function calcularHistorialDocente(cId, alId) {
+  const clasesCurso = clases.filter(x => x.cursoId === cId);
+  let sumaNotas = 0, cantNotas = 0;
+  let ultimosComentarios = [];
+
+  clasesCurso.forEach(cl => {
+    const nota = cl.notas[alId];
+    const obs = cl.observaciones[alId];
+
+    if(nota) {
+      const nNum = parseFloat(nota);
+      if(!isNaN(nNum)) { sumaNotas += nNum; cantNotas++; }
+    }
+    if(obs && obs.trim() !== '') {
+      ultimosComentarios.push(`[${cl.fecha.split('-').reverse().slice(0,2).join('/')}] ${obs}`);
+    }
+  });
+
+  const promedio = cantNotas > 0 ? (sumaNotas / cantNotas).toFixed(1) : 'S/N';
+  const comentariosTexto = ultimosComentarios.slice(-2).reverse().join(' // ') || 'Sin novedades registradas';
+
+  return { promedio, bitacora: comentariosTexto };
+}
+
+
+// --- ETIQUETA VISTA GENERAL (DASHBOARD) ---
+function renderDashboard() {
+  const cId = document.getElementById('dashCurso').value;
+  const tbody = document.getElementById('dashTableBody');
+  
+  if(!cId) {
+    tbody.innerHTML = `<tr><td colspan="7" class="center">Cree una institución y curso para comenzar la visualización.</td></tr>`;
     return;
   }
 
-  let eActiva = null, mActiva = null, curActivo = null;
-  for (let e of escuelas) {
-    for (let m of e.materias) {
-      let c = m.cursos.find(x => x.id === cId);
-      if (c) { eActiva = e; mActiva = m; curActivo = c; break; }
-    }
-  }
+  const listAl = alumnos[cId] || [];
+  let html = '';
+  let sumAsistencia = 0, totalEnRiesgo = 0;
 
-  if (!curActivo) return;
+  listAl.forEach(al => {
+    const asis = calcularAsistenciaAlumno(cId, al.id);
+    const historial = calcularHistorialDocente(cId, al.id);
+    sumAsistencia += asis.porcentaje;
+    if(asis.porcentaje < 75) totalEnRiesgo++;
 
-  const listaAlumnos = alumnos[cId] || [];
-  let totalInasistenciasCurso = 0;
-  let alumnosEnRiesgo = 0;
-  
-  const copiaOrdenada = [...listaAlumnos].sort((a, b) => a.nombre.localeCompare(b.nombre));
+    let bAsistClass = asis.porcentaje >= 85 ? 'bg-green' : (asis.porcentaje >= 75 ? 'bg-amber' : 'bg-red');
 
-  let filasTabla = '';
-  copiaOrdenada.forEach((al, index) => {
-    const abs = getAbsencias(cId, al.id);
-    const faltas = abs.A + (abs.T * 0.5);
-    totalInasistenciasCurso += faltas;
-    
-    const porcentaje = getPct(cId, al.id);
-    if (porcentaje < 75) alumnosEnRiesgo++;
-
-    const nota1T = getNF(cId, al.id, '1T') || '-';
-    const nota2T = getNF(cId, al.id, '2T') || '-';
-
-    let pctClass = 'rep-pct-good';
-    if (porcentaje < 85 && porcentaje >= 75) pctClass = 'rep-pct-warn';
-    if (porcentaje < 75) pctClass = 'rep-pct-bad';
-
-    filasTabla += `
-      <tr>
-        <td class="center">${index + 1}</td>
-        <td><strong>${al.nombre}</strong></td>
-        <td class="center">${al.cond || 'Regular'}</td>
-        <td class="center">${faltas}</td>
-        <td class="center ${pctClass}">${porcentaje}%</td>
-        <td class="center" style="font-weight:bold;">${nota1T} / ${nota2T}</td>
-      </tr>
-    `;
+    html += `<tr>
+      <td class="center">${al.num}</td>
+      <td><strong>${al.nombre}</strong></td>
+      <td><span class="badge bg-blue">${al.cond}</span></td>
+      <td class="center font-weight:600">${asis.faltas}</td>
+      <td class="center"><span class="badge ${bAsistClass}">${asis.porcentaje}%</span></td>
+      <td class="center" style="font-weight:700; color:var(--blue);">${historial.promedio}</td>
+      <td style="color:var(--ink-light); font-size:11px;">${historial.bitacora}</td>
+    </tr>`;
   });
 
-  if (listaAlumnos.length === 0) {
-    filasTabla = `<tr><td colspan="6" class="center" style="color:#5C4A30; padding:15px;">No hay estudiantes matriculados en esta sección.</td></tr>`;
-  }
+  tbody.innerHTML = html || `<tr><td colspan="7" class="center">No hay estudiantes cargados en este curso. Vaya a "Gestión Alumnos".</td></tr>`;
 
-  const listaObs = observaciones.filter(o => o.cursoId === cId);
-  let bloqueObservaciones = '';
+  document.getElementById('lblMatricula').textContent = listAl.length;
+  document.getElementById('lblAsistencia').textContent = listAl.length ? Math.round(sumAsistencia / listAl.length) + '%' : '100%';
+  document.getElementById('lblRiesgo').textContent = totalEnRiesgo;
+  document.getElementById('lblTareas').textContent = (clases.filter(x => x.cursoId === cId)).length;
+}
 
-  if (listaObs.length > 0) {
-    bloqueObservaciones = `
-      <div class="rep-seccion-titulo">Bitácora de Observaciones Cualitativas</div>
-    `;
-    const obsOrdenadas = [...listaObs].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    obsOrdenadas.forEach(o => {
-      let alu = listaAlumnos.find(x => x.id == o.alumnoId);
-      let aluNombre = alu ? alu.nombre : 'General / Todo el grupo';
-      bloqueObservaciones += `
-        <div class="obs-item" style="margin-bottom:8px; background:#FAF8F4; border-left:3px solid #B89A6A; padding:8px; font-size:11px;">
-          <div><strong>Estudiante:</strong> ${aluNombre} — <span style="color:#B87210; font-weight:600;">[${o.tipo}]</span></div>
-          <div style="margin-top:2px; color:#1A1208;">${o.texto}</div>
-          <div class="obs-meta" style="font-size:9px; color:#7A4C08; margin-top:2px;">Fecha de registro: ${o.fecha.split('-').reverse().join('/')}</div>
-        </div>
-      `;
+// ========================================================
+// REPORTE INSTITUCIONAL DINÁMICO IMPRESO INTEGRADO (PDF)
+// ========================================================
+function generarReportePDF() {
+  const cId = document.getElementById('dashCurso').value;
+  if(!cId) return;
+
+  const cursoActivo = cursos.find(c => c.id === cId);
+  if(!cursoActivo) return;
+
+  const listAl = alumnos[cId] || [];
+  const copiaOrdenada = [...listAl].sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+  let filas = '';
+  let totalFaltasCurso = 0, alumnosRiesgo = 0;
+
+  copiaOrdenada.forEach((al, idx) => {
+    const asis = calcularAsistenciaAlumno(cId, al.id);
+    const historial = calcularHistorialDocente(cId, al.id);
+    totalFaltasCurso += asis.faltas;
+    if(asis.porcentaje < 75) alumnosRiesgo++;
+
+    filas += `<tr>
+      <td style="text-align:center">${idx + 1}</td>
+      <td><strong>${al.nombre}</strong></td>
+      <td style="text-align:center">${al.cond}</td>
+      <td style="text-align:center">${asis.faltas}</td>
+      <td style="text-align:center; font-weight:600;">${asis.porcentaje}%</td>
+      <td style="text-align:center; font-weight:bold;">${historial.promedio}</td>
+      <td style="font-size:10px; color:#5C4A30;">${historial.bitacora}</td>
+    </tr>`;
+  });
+
+  // Adjuntar el diario de secuencia didáctica colectivo del docente en el PDF
+  const clasesCurso = clases.filter(x => x.cursoId === cId).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+  let bloqueSecuencias = '';
+  if(clasesCurso.length > 0) {
+    bloqueSecuencias += `<div style="font-size:12px; font-weight:700; text-transform:uppercase; margin-top:25px; border-left:3px solid #7A6F4D; padding-left:6px;">Relatoría de Secuencias Didácticas y Temas Abordados</div>`;
+    clasesCurso.forEach(cl => {
+      bloqueSecuencias += `<div style="background:#FAF8F4; padding:8px; margin-top:6px; border:1px solid #E3DEC3; border-radius:4px; font-size:11px;">
+        <strong>Fecha: ${cl.fecha.split('-').reverse().join('/')} — ${cl.titulo}</strong> <span style="color:#A06418">(Pond: ${cl.ponderacion}%)</span><br>
+        <p style="margin-top:2px; color:#2B261F; white-space:pre-line;">${cl.relatoria || 'Sin desglose de relatoría redactado.'}</p>
+      </div>`;
     });
   }
 
-  const hLabelPDF = curActivo.horario ? ` — Horario: ${curActivo.horario}` : '';
-  const contenedorReporte = document.getElementById('reporteContenido');
-  contenedorReporte.innerHTML = `
+  const lienzo = document.getElementById('reporteContenido');
+  lienzo.innerHTML = `
     <div class="rep-header">
       <div>
-        <h1 class="rep-titulo">Informe de Trayectoria Escolar</h1>
-        <p class="rep-subtitulo">${eActiva.nombre} — Espacio Curricular: ${mActiva.nombre}</p>
+        <h1 style="font-size:22px; text-transform:uppercase; font-weight:700;">Informe Analítico de Trayectorias y Secuencias</h1>
+        <p style="font-size:13px; color:#6E6557; margin-top:4px;">Escuela N°: ${cursoActivo.escuela} — Espacio Curricular: ${cursoActivo.materia}</p>
       </div>
-      <div class="rep-meta">
-        <strong>Curso: ${curActivo.nombre}${hLabelPDF}</strong><br>
+      <div style="font-size:11px; text-align:right; line-height:1.4;">
+        <strong>Curso: ${cursoActivo.nombre}</strong><br>
+        Horario: ${cursoActivo.horario || 'No especificado'}<br>
         Emisión: ${new Date().toLocaleDateString('es-AR')}<br>
-        Sistema de Trayectorias Locales
+        Régimen: ${cursoActivo.ciclo}
       </div>
     </div>
 
-    <div class="rep-info">
-      <div class="rep-info-item">
-        <div class="rep-info-label">Matrícula</div>
-        <div class="rep-info-valor">${listaAlumnos.length}</div>
+    <div class="rep-info-block">
+      <div class="rep-info-box">
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Matrícula Total</div>
+        <div style="font-size:18px; font-weight:700;">${listAl.length}</div>
       </div>
-      <div class="rep-info-item">
-        <div class="rep-info-label">Alumnos en Riesgo</div>
-        <div class="rep-info-valor" style="color:${alumnosEnRiesgo ? 'var(--red)' : 'var(--green)'}">${alumnosEnRiesgo}</div>
+      <div class="rep-info-box">
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Alumnos en Alerta Riesgo</div>
+        <div style="font-size:18px; font-weight:700; color:#9E3224;">${alumnosRiesgo}</div>
       </div>
-      <div class="rep-info-item">
-        <div class="rep-info-label">Inasistencias Total</div>
-        <div class="rep-info-valor">${totalInasistenciasCurso}</div>
+      <div class="rep-info-box">
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Inasistencias del Curso</div>
+        <div style="font-size:18px; font-weight:700;">${totalFaltasCurso}</div>
       </div>
-      <div class="rep-info-item">
-        <div class="rep-info-label">Observaciones</div>
-        <div class="rep-info-valor">${listaObs.length}</div>
+      <div class="rep-info-box">
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Clases Dictadas</div>
+        <div style="font-size:18px; font-weight:700;">${clasesCurso.length}</div>
       </div>
     </div>
 
-    <div class="rep-seccion-titulo">Planilla General de Rendimiento y Regularidad</div>
-    <table>
+    <div style="font-size:12px; font-weight:700; text-transform:uppercase; border-left:3px solid #7A6F4D; padding-left:6px; margin-bottom:8px;">Planilla Analítica de Rendimiento Colectivo y Bitácora</div>
+    <table style="width:100%; border-collapse:collapse; font-size:11px;">
       <thead>
-        <tr>
-          <th class="center" style="width:40px;">N°</th>
-          <th>Apellido y Nombre</th>
-          <th class="center" style="width:100px;">Condición</th>
-          <th class="center" style="width:80px;">Faltas</th>
-          <th class="center" style="width:90px;">% Asist.</th>
-          <th class="center" style="width:110px;">Nota Final (1T / 2T)</th>
+        <tr style="background:#EFECE3;">
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">N°</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; width:180px;">Apellido y Nombre</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Condición</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Faltas</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">% Asist.</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Promedio</th>
+          <th style="border:1px solid #E3DEC3; padding:6px;">Historial de Impacto Cualitativo</th>
         </tr>
       </thead>
       <tbody>
-        ${filasTabla}
+        ${filas || '<tr><td colspan="7" style="text-align:center; padding:10px;">No hay datos para imprimir.</td></tr>'}
       </tbody>
     </table>
 
-    ${bloqueObservaciones}
+    ${bloqueSecuencias}
 
-    <div class="rep-firma">
-      <div class="rep-firma-box">
-        <div class="rep-firma-linea"></div>
-        <div class="rep-firma-nombre">Firma del Docente a Cargo</div>
-        <div class="rep-firma-rol">Espacio Curricular: ${mActiva.nombre}</div>
+    <div style="margin-top:50px; display:flex; justify-content:flex-end;">
+      <div style="width:230px; text-align:center; font-size:11px;">
+        <div style="border-top:1px solid #2B261F; margin-bottom:4px;"></div>
+        <strong>Firma del Docente a Cargo</strong><br>
+        <span style="color:#6E6557; font-size:10px;">Área: ${cursoActivo.materia}</span>
       </div>
-    </div>
-
-    <div class="rep-footer">
-      Documento de carácter analítico y confidencial para el seguimiento de trayectorias formativas.<br>
-      Generado de forma local y offline — Ciclo Lectivo 2026.
     </div>
   `;
 
-  const repPDF = document.getElementById('reportePDF');
-  repPDF.style.display = 'block';
-  
+  const panelPDF = document.getElementById('reportePDF');
+  panelPDF.style.display = 'block';
   setTimeout(() => {
     window.print();
-    setTimeout(() => { repPDF.style.display = 'none'; }, 300);
+    setTimeout(() => { panelPDF.style.display = 'none'; }, 200);
   }, 150);
 }
 
-// INICIALIZACIÓN INMEDIATA AL REARRANCAR LA INSTANCIA
+// INICIALIZACIÓN
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('asistFecha').value = new Date().toISOString().split('T')[0];
-  
-  if (!cargarDatos()) {
-    // Estructura por defecto para Escuela 753
-    escuelas = [
-      {
-        id: 'esc_753_chubut',
-        nombre: 'Escuela 753',
-        materias: [
-          {
-            id: 'mat_753_admin',
-            nombre: 'Administración y Liq. de Sueldos',
-            cursos: [
-              { id: 'cur_753_mod2a', nombre: 'Módulo II A', horario: 'Lun 18-20hs', clasesTotales: { '1T': 27, '2T': 27 } },
-              { id: 'cur_753_mod2b', nombre: 'Módulo II B', horario: 'Mie 20-22hs', clasesTotales: { '1T': 27, '2T': 27 } }
-            ]
-          },
-          {
-            id: 'mat_753_economia',
-            nombre: 'Economía',
-            cursos: [
-              { id: 'cur_753_mod2a_eco', nombre: 'Módulo II A', horario: 'Vie 18-20hs', clasesTotales: { '1T': 27, '2T': 27 } }
-            ]
-          }
-        ]
-      }
+
+  if(!cargarTodo()) {
+    // Demo limpia
+    cursos = [{ id: 'c_demo1', escuela: '753', materia: 'Administración y Liq. de Sueldos', nombre: 'Módulo II A', horario: 'Lun 18-20hs', ciclo: 'Cuatrimestral' }];
+    alumnos['c_demo1'] = [
+      { id: 'al_demo1', num: 1, nombre: 'Álvarez, Martina', cond: 'Regular' },
+      { id: 'al_demo2', num: 2, nombre: 'García, Valentina', cond: 'Regular' }
     ];
-    
-    alumnos['cur_753_mod2a'] = [
-      { id: 2001, num: 1, nombre: 'Álvarez, Martina', cond: 'Regular' },
-      { id: 2002, num: 2, nombre: 'García, Valentina', cond: 'Regular' }
-    ];
-    alumnos['cur_753_mod2b'] = [];
-    alumnos['cur_753_mod2a_eco'] = [];
-    
-    guardarDatos();
+    clases = [{
+      id: 'cl_init_demo',
+      cursoId: 'c_demo1',
+      titulo: 'Introducción a Convenios Colectivos',
+      fecha: new Date().toISOString().split('T')[0],
+      ponderacion: 15,
+      relatoria: 'Se presentó el artículo 14 bis de la CN y los diferentes tipos de paritarias.',
+      notas: { 'al_demo1': '9', 'al_demo2': '7' },
+      observaciones: { 'al_demo1': 'Comprende rápido las escalas salariales.', 'al_demo2': 'Le costó calcular las horas extras.' }
+    }];
+    guardarTodo();
   }
 
-  sincronizarSelectores();
-  renderResumen();
+  sincronizarSelectoresCursos();
+  renderDashboard();
 });
 </script>
 </body>
