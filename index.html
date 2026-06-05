@@ -65,7 +65,7 @@ button.red{background:var(--red)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--sand);padding:8px 10px;text-align:left;font-weight:600;color:var(--ink2);border-bottom:1px solid var(--border2)}
 td{padding:6px 10px;border-bottom:1px solid var(--sand);vertical-align:middle}
-.tw{overflow-x:auto}
+.tw">overflow-x:auto}
 .center{text-align:center}
 .btn-grid{display:flex;gap:2px}
 .bg-btn{background:var(--sand);border:none;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--ink2)}
@@ -79,10 +79,10 @@ td{padding:6px 10px;border-bottom:1px solid var(--sand);vertical-align:middle}
 textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:12px;font-family:inherit;resize:vertical}
 .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,18,8,.4);z-index:100;align-items:center;justify-content:center;padding:16px}
 .modal.on{display:flex}
-.modal-box{background:var(--white);border-radius:12px;max-width:500px;width:100%;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.modal-box{background:var(--white);border-radius:12px;max-width:550px;width:100%;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .modal-head{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .esc-item{border:1px solid var(--border);padding:8px;border-radius:6px;margin-bottom:6px;background:var(--cream)}
-.grid-resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.grid-resumen {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
 .st-card{padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
 .st-num{font-size:20px;font-weight:700;color:var(--ink)}
 .st-lbl{font-size:11px;color:var(--ink2);text-transform:uppercase}
@@ -91,7 +91,7 @@ textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6p
 .obs-meta{font-size:10px;color:var(--ink2);margin-top:2px}
 .empty{text-align:center;padding:30px;color:var(--ink2);font-style:italic}
 
-/* DISEÑO AVANZADO DEL REPORTE IMPRESO (PDF) */
+/* ESTILOS DE PRESENTACIÓN DEL REPORTE IMPRESO (PDF) */
 #reportePDF { font-family: 'Segoe UI', Tahoma, sans-serif; color: #1A1208; }
 .rep-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1A1208; padding-bottom: 12px; margin-bottom: 20px; }
 .rep-titulo { font-size: 22px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #1A1208; }
@@ -178,7 +178,7 @@ textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6p
 
     <div class="card">
       <div class="card-head">Planilla de Estado de Trayectoria Activa</div>
-      <div class="tw">
+      <div class="tw" style="overflow-x:auto">
         <table>
           <thead>
             <tr>
@@ -208,7 +208,7 @@ textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6p
     </div>
     <div class="card">
       <div class="card-head">Control Diario de Presentismo</div>
-      <div class="tw">
+      <div class="tw" style="overflow-x:auto">
         <table>
           <thead>
             <tr>
@@ -234,7 +234,7 @@ textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6p
     </div>
     <div class="card">
       <div class="card-head">Planilla de Registro Evaluativo Cualitativo y Cuatrimestral</div>
-      <div class="tw">
+      <div class="tw" style="overflow-x:auto">
         <table>
           <thead>
             <tr>
@@ -309,7 +309,8 @@ textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:6p
       </div>
       <div class="row" style="margin-bottom:0">
         <input type="text" id="cfgCursoNombre" placeholder="Curso (Ej: Módulo II A)" style="flex:1" />
-        <button class="amb" onclick="crearCurso()"><i class="ti ti-plus"></i> Abrir sección</button>
+        <input type="text" id="cfgCursoHorario" placeholder="Horario (Ej: Lun 18-20hs)" style="width:130px" />
+        <button class="amb" onclick="crearCurso()"><i class="ti ti-plus"></i> Abrir</button>
       </div>
     </div>
 
@@ -339,9 +340,7 @@ window.calificaciones = {};
 window.observaciones = [];
 
 function guardarDatos() {
-  const comp = {
-    escuelas, alumnos, asistencias, calificaciones, observaciones
-  };
+  const comp = { escuelas, alumnos, asistencias, calificaciones, observaciones };
   localStorage.setItem(S_KEY, JSON.stringify(comp));
 }
 
@@ -390,7 +389,8 @@ function sincronizarSelectores() {
       (m.cursos || []).forEach(c => {
         const createOpt = () => {
           const opt = document.createElement('option');
-          opt.value = c.id; opt.textContent = `${e.nombre} · ${m.nombre} [${c.nombre}]`;
+          const hLbl = c.horario ? ` [${c.horario}]` : '';
+          opt.value = c.id; opt.textContent = `${e.nombre} · ${m.nombre} [${c.nombre}]${hLbl}`;
           return opt;
         };
         sRep.appendChild(createOpt());
@@ -407,7 +407,7 @@ function sincronizarSelectores() {
   if(cacheObs) sObs.value = cacheObs;
 }
 
-// Auxiliares de Métricas y Cálculos de Asistencia
+// Auxiliares de Métricas y Asistencias
 function getAbsencias(cid, alid) {
   const pool = asistencias[cid] || {};
   let A = 0, T = 0, P = 0;
@@ -455,11 +455,11 @@ function goTab(id, btn) {
   
   if(id === 'resumen') renderResumen();
   if(id === 'asistencia') renderAsistencia();
-  if(id === 'notas') renderNotas();
+  if(id === 'notes' || id === 'notas') renderNotas();
   if(id === 'observaciones') cambiarCursoObs();
 }
 
-// RENDERS DE PESTAÑAS
+// RENDERS DE SECCIONES
 function renderResumen() {
   const cid = document.getElementById('repCurso').value;
   const p = document.getElementById('repPeriodo').value;
@@ -488,7 +488,7 @@ function renderResumen() {
       <td>${al.num}</td>
       <td><strong>${al.nombre}</strong></td>
       <td><span class="badge b-blue">${al.cond || 'Regular'}</span></td>
-      <td class="center font-weight:600">${faltas}</td>
+      <td class="center" style="font-weight:600">${faltas}</td>
       <td class="center"><span class="badge ${bC}">${pct}%</span></td>
       <td class="center"><span class="badge b-blue" style="font-size:12px">${nf || '-'}</span></td>
     </tr>`;
@@ -508,8 +508,9 @@ function renderAsistencia() {
   const f = document.getElementById('asistFecha').value;
   const tbody = document.getElementById('asistTableBody');
   
+  if(!cid) return;
   document.getElementById('lblClasesTotales').textContent = `Clases estimadas: ${getClasesTotales(cid, p)}`;
-  if(!cid || !f) return;
+  if(!f) return;
 
   if(!asistencias[cid]) asistencias[cid] = {};
   if(!asistencias[cid][f]) asistencias[cid][f] = {};
@@ -531,7 +532,7 @@ function renderAsistencia() {
           <button class="bg-btn ${current==='T'?'on-t':''}" onclick="setAsist('${cid}','${f}','${al.id}','T')">T</button>
         </div>
       </td>
-      <td>Asistencia acumulada: <span class="font-weight:600">${pct}%</span></td>
+      <td>Asistencia acumulada: <span style="font-weight:600">${pct}%</span></td>
     </tr>`;
   });
 
@@ -599,7 +600,7 @@ function setNota(cid, alid, p, campo, val) {
   guardarDatos();
 }
 
-// CONTROL DE HISTORIAL Y BITÁCORA
+// CONTROL DE BITÁCORA
 function cambiarCursoObs() {
   const cid = document.getElementById('obsCurso').value;
   const sAl = document.getElementById('obsAlumno');
@@ -644,7 +645,6 @@ function renderListaObservaciones() {
   const filtradas = observaciones.filter(o => o.cursoId === cid);
   let html = '';
 
-  // Mostrar orden inverso (últimas novedades arriba)
   [...filtradas].reverse().forEach(o => {
     let target = "General";
     if(o.alumnoId !== 'general' && alumnos[cid]) {
@@ -670,7 +670,7 @@ function borrarObs(id) {
   renderListaObservaciones();
 }
 
-// GESTIÓN MANUAL DE MODAL DE COMPONENTES ESCOLARES
+// LOGICA DE RECONSTRUCCIÓN DE ESTRUCTURAS ESCOLARES (ALTAS)
 function openModal(id) {
   if (id === 'configModal') renderEscuelasList();
   const m = document.getElementById(id);
@@ -705,6 +705,7 @@ function crearMateria() {
 function crearCurso() {
   const composite = document.getElementById('cfgCursoMatRef').value;
   const n = document.getElementById('cfgCursoNombre').value.trim();
+  const h = document.getElementById('cfgCursoHorario').value.trim();
   if(!composite || !n) return;
   
   const [escId, matId] = composite.split('|');
@@ -713,9 +714,10 @@ function crearCurso() {
   
   if(mat) {
     const cId = 'cur_' + Date.now();
-    mat.cursos.push({ id: cId, nombre: n, clasesTotales: { '1T': 27, '2T': 27 } });
+    mat.cursos.push({ id: cId, nombre: n, horario: h, clasesTotales: { '1T': 27, '2T': 27 } });
     alumnos[cId] = []; // Inicializar matriz vacía para alumnos
     document.getElementById('cfgCursoNombre').value = '';
+    document.getElementById('cfgCursoHorario').value = '';
     guardarDatos(); sincronizarSelectores(); renderEscuelasList();
   }
 }
@@ -729,7 +731,8 @@ function renderEscuelasList() {
       e.materias.forEach(m => {
         html += `<div style="margin-left:12px;font-size:11px;color:var(--blue)">📘 Materia: ${m.nombre}</div>`;
         m.cursos.forEach(c => {
-          html += `<div style="margin-left:24px;font-size:11px;color:var(--ink2)">🔸 División: ${c.nombre} <span style="color:var(--green)">(${alumnos[c.id] ? alumnos[c.id].length : 0} al.)</span></div>`;
+          const hString = c.horario ? ` — Horario: ${c.horario}` : '';
+          html += `<div style="margin-left:24px;font-size:11px;color:var(--ink2)">🔸 División: ${c.nombre}${hString} <span style="color:var(--green)">(${alumnos[c.id] ? alumnos[c.id].length : 0} al.)</span></div>`;
         });
       });
     html += `</div>`;
@@ -737,9 +740,7 @@ function renderEscuelasList() {
   box.innerHTML = html || '<div class="empty">Sin escuelas dadas de alta.</div>';
 }
 
-// ========================================================
-// GENERADOR DINÁMICO DE REPORTE E INFORME INSTITUCIONAL PDF
-// ========================================================
+// GENERADOR DINÁMICO DE REPORTE INSTITUCIONAL PDF
 function generarReportePDF() {
   const cId = document.getElementById('repCurso').value;
   if (!cId) {
@@ -747,7 +748,6 @@ function generarReportePDF() {
     return;
   }
 
-  // Localizar escuela, materia y curso en tu estructura multi-nivel
   let eActiva = null, mActiva = null, curActivo = null;
   for (let e of escuelas) {
     for (let m of e.materias) {
@@ -758,18 +758,16 @@ function generarReportePDF() {
 
   if (!curActivo) return;
 
-  // Extraer alumnos y procesar métricas grupales para las estadísticas superiores del PDF
   const listaAlumnos = alumnos[cId] || [];
   let totalInasistenciasCurso = 0;
   let alumnosEnRiesgo = 0;
   
-  // Clonamos y ordenamos alfabéticamente para la planilla formal
   const copiaOrdenada = [...listaAlumnos].sort((a, b) => a.nombre.localeCompare(b.nombre));
 
   let filasTabla = '';
   copiaOrdenada.forEach((al, index) => {
     const abs = getAbsencias(cId, al.id);
-    const faltas = abs.A + (abs.T * 0.5); // Computar ausentes y llegadas tarde (0.5)
+    const faltas = abs.A + (abs.T * 0.5);
     totalInasistenciasCurso += faltas;
     
     const porcentaje = getPct(cId, al.id);
@@ -778,7 +776,6 @@ function generarReportePDF() {
     const nota1T = getNF(cId, al.id, '1T') || '-';
     const nota2T = getNF(cId, al.id, '2T') || '-';
 
-    // Formatear el badge de asistencia para el PDF usando tus estilos existentes
     let pctClass = 'rep-pct-good';
     if (porcentaje < 85 && porcentaje >= 75) pctClass = 'rep-pct-warn';
     if (porcentaje < 75) pctClass = 'rep-pct-bad';
@@ -799,7 +796,6 @@ function generarReportePDF() {
     filasTabla = `<tr><td colspan="6" class="center" style="color:#5C4A30; padding:15px;">No hay estudiantes matriculados en esta sección.</td></tr>`;
   }
 
-  // Filtrar observaciones para la bitácora cualitativa
   const listaObs = observaciones.filter(o => o.cursoId === cId);
   let bloqueObservaciones = '';
 
@@ -821,7 +817,7 @@ function generarReportePDF() {
     });
   }
 
-  // Ensamblar la información utilizando las clases CSS profesionales que ya tiene tu archivo
+  const hLabelPDF = curActivo.horario ? ` — Horario: ${curActivo.horario}` : '';
   const contenedorReporte = document.getElementById('reporteContenido');
   contenedorReporte.innerHTML = `
     <div class="rep-header">
@@ -830,7 +826,7 @@ function generarReportePDF() {
         <p class="rep-subtitulo">${eActiva.nombre} — Espacio Curricular: ${mActiva.nombre}</p>
       </div>
       <div class="rep-meta">
-        <strong>Curso: ${curActivo.nombre}</strong><br>
+        <strong>Curso: ${curActivo.nombre}${hLabelPDF}</strong><br>
         Emisión: ${new Date().toLocaleDateString('es-AR')}<br>
         Sistema de Trayectorias Locales
       </div>
@@ -883,12 +879,11 @@ function generarReportePDF() {
     </div>
 
     <div class="rep-footer">
-      Documento institucional de carácter analítico y confidencial para el seguimiento de trayectorias formativas.<br>
+      Documento de carácter analítico y confidencial para el seguimiento de trayectorias formativas.<br>
       Generado de forma local y offline — Ciclo Lectivo 2026.
     </div>
   `;
 
-  // Disparar la ventana nativa de impresión / guardado PDF
   const repPDF = document.getElementById('reportePDF');
   repPDF.style.display = 'block';
   
@@ -898,12 +893,12 @@ function generarReportePDF() {
   }, 150);
 }
 
-// INICIALIZACIÓN INMEDIATA AL CARGAR LA PÁGINA
+// INICIALIZACIÓN INMEDIATA AL REARRANCAR LA INSTANCIA
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('asistFecha').value = new Date().toISOString().split('T')[0];
   
   if (!cargarDatos()) {
-    // Valores por defecto autocompletados (Escuela 753) si la base de datos local está limpia
+    // Estructura por defecto para Escuela 753
     escuelas = [
       {
         id: 'esc_753_chubut',
@@ -913,15 +908,15 @@ document.addEventListener("DOMContentLoaded", () => {
             id: 'mat_753_admin',
             nombre: 'Administración y Liq. de Sueldos',
             cursos: [
-              { id: 'cur_753_mod2a', nombre: 'Módulo II A', clasesTotales: { '1T': 27, '2T': 27 } },
-              { id: 'cur_753_mod2b', nombre: 'Módulo II B', clasesTotales: { '1T': 27, '2T': 27 } }
+              { id: 'cur_753_mod2a', nombre: 'Módulo II A', horario: 'Lun 18-20hs', clasesTotales: { '1T': 27, '2T': 27 } },
+              { id: 'cur_753_mod2b', nombre: 'Módulo II B', horario: 'Mie 20-22hs', clasesTotales: { '1T': 27, '2T': 27 } }
             ]
           },
           {
             id: 'mat_753_economia',
             nombre: 'Economía',
             cursos: [
-              { id: 'cur_753_mod2a_eco', nombre: 'Módulo II A', clasesTotales: { '1T': 27, '2T': 27 } }
+              { id: 'cur_753_mod2a_eco', nombre: 'Módulo II A', horario: 'Vie 18-20hs', clasesTotales: { '1T': 27, '2T': 27 } }
             ]
           }
         ]
