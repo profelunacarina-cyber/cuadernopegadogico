@@ -86,7 +86,6 @@ tr:last-child td{border-bottom:none}
 .stat-value{font-size:22px;font-weight:700}
 .stat-label{font-size:11px;text-transform:uppercase;color:var(--ink-light);font-weight:500}
 
-/* Estructura Modular Flex para Planificaciones Integradas */
 .planif-layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
 .list-sidebar{border-right:1px solid var(--border);padding-right:16px;max-height:750px;overflow-y:auto}
 .sidebar-item{padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;cursor:pointer;background:var(--bg-card);transition:all 0.15s;}
@@ -102,6 +101,11 @@ tr:last-child td{border-bottom:none}
   #reportePDF { display: block !important; padding: 20mm !important; }
   @page { size: A4; margin: 0; }
 }
+
+/* Selector múltiple simple de días */
+.checkbox-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.checkbox-label { background: var(--bg-main); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px; }
+.checkbox-label input { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -111,11 +115,11 @@ tr:last-child td{border-bottom:none}
   <div class="topbar">
     <div>
       <div class="topbar-title"><i class="ti ti-school"></i> Gestión Docente Unificada</div>
-      <div class="topbar-sub">Seguimiento Integrado de Secuencias, Evaluaciones Diarias y Bitácora Cualitativa</div>
+      <div class="topbar-sub">Seguimiento Integrado de Secuencias, Evaluaciones Diarias y Analítica Estadística</div>
     </div>
   </div>
 
-  <!-- Barra de Etiquetas Directas (Navegación Principal) -->
+  <!-- Barra de Etiquetas Directas (Pestañas) -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('dashboard', this)"><i class="ti ti-chart"></i> Vista General</button>
     <button class="tab-btn" onclick="switchTab('escuelas', this)"><i class="ti ti-school"></i> Gestión Escuelas e Instituciones</button>
@@ -143,18 +147,18 @@ tr:last-child td{border-bottom:none}
           <div class="stat-value" id="lblAsistencia">0%</div>
           <div class="stat-label">Asistencia Media Promedio</div>
         </div>
-        <div class="stat-card bg-red">
-          <div class="stat-value" id="lblRiesgo">0</div>
-          <div class="stat-label">Alumnos en Riesgo Alerta</div>
-        </div>
         <div class="stat-card bg-amber">
-          <div class="stat-value" id="lblTareas">0</div>
-          <div class="stat-label">Clases / Secuencias Registradas</div>
+          <div class="stat-value" id="lblClasesPlanif">0</div>
+          <div class="stat-label">Clases Totales Ciclo Lectivo</div>
+        </div>
+        <div class="stat-card bg-red">
+          <div class="stat-value" id="lblClasesDadas">0</div>
+          <div class="stat-label">Clases Ejecutadas a la Fecha</div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Resumen Analítico y Sabana Cualitativa de Rendimiento</div>
+        <div class="card-title">Resumen Analítico y Métrica de Rendimiento / Presentismo Estadístico</div>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -162,9 +166,10 @@ tr:last-child td{border-bottom:none}
                 <th style="width:50px">N°</th>
                 <th>Estudiante</th>
                 <th>Condición</th>
+                <th class="center">Presencias</th>
                 <th class="center">Faltas Acum.</th>
-                <th class="center">% Asist.</th>
-                <th class="center">Promedio Actividades</th>
+                <th class="center">% Asist. Real</th>
+                <th class="center">Promedio Notas</th>
                 <th>Últimas Notas Cuali / Observaciones de Aula</th>
               </tr>
             </thead>
@@ -174,7 +179,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
-    <!-- ETIQUETA 2: GESTIÓN DE ESCUELAS Y MATERIAS (CORREGIDO Y OPTIMIZADO) -->
+    <!-- ETIQUETA 2: GESTIÓN DE ESCUELAS Y MATERIAS -->
     <div id="panel-escuelas" class="tab-panel">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px;">
         
@@ -184,15 +189,15 @@ tr:last-child td{border-bottom:none}
           <div class="row" style="flex-direction: column; align-items: stretch; gap: 12px;">
             <div>
               <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Nombre o Número de la Escuela:</label>
-              <input type="text" id="escNumero" placeholder="Ej: Escuela N° 753, Colegio Nacional, etc." style="width:100%" />
+              <input type="text" id="escNumero" placeholder="Ej: Escuela N° 753" style="width:100%" />
             </div>
             <button class="success" style="justify-content: center;" onclick="agregarEscuelaBase()"><i class="ti ti-plus"></i> Guardar Escuela Base</button>
           </div>
         </div>
 
-        <!-- Bloque Derecho: Agregar Materias / Cursos a la escuela existente -->
+        <!-- Bloque Derecho: Agregar Materias / Cursos con Parámetros del Ciclo Lectivo -->
         <div class="card">
-          <div class="card-title">2. Asignar Materias y Cursos a una Escuela</div>
+          <div class="card-title">2. Asignar Materia, Curso y Relación de Ciclo / Horario</div>
           <div class="row" style="flex-direction: column; align-items: stretch; gap: 12px;">
             <div>
               <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Seleccionar Escuela:</label>
@@ -201,43 +206,69 @@ tr:last-child td{border-bottom:none}
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div>
                 <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Materia:</label>
-                <input type="text" id="escMateria" placeholder="Ej: Economía" style="width:100%" />
+                <input type="text" id="escMateria" placeholder="Ej: Economía Política" style="width:100%" />
               </div>
               <div>
                 <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Curso / División:</label>
-                <input type="text" id="escCurso" placeholder="Ej: 4to II" style="width:100%" />
+                <input type="text" id="escCurso" placeholder="Ej: 5to I" style="width:100%" />
               </div>
             </div>
+
+            <!-- Parámetros del Ciclo Lectivo y Horario estructural -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div>
-                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Horario:</label>
-                <input type="text" id="escHorario" placeholder="Ej: Lun 18-20hs" style="width:100%" />
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Inicio Ciclo Lectivo:</label>
+                <input type="date" id="escFechaInicio" style="width:100%" />
               </div>
               <div>
-                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Régimen:</label>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Fin Ciclo Lectivo:</label>
+                <input type="date" id="escFechaFin" style="width:100%" />
+              </div>
+            </div>
+
+            <div>
+              <label style="font-weight:600; display:block; margin-bottom:2px; color:var(--ink-light);">Días de la semana que dicta clase (Horario):</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" name="escDias" value="1"> Lunes</label>
+                <label class="checkbox-label"><input type="checkbox" name="escDias" value="2"> Martes</label>
+                <label class="checkbox-label"><input type="checkbox" name="escDias" value="3"> Miércoles</label>
+                <label class="checkbox-label"><input type="checkbox" name="escDias" value="4"> Jueves</label>
+                <label class="checkbox-label"><input type="checkbox" name="escDias" value="5"> Viernes</label>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Banda Horaria Textual:</label>
+                <input type="text" id="escHorarioTexto" placeholder="Ej: 18:00 a 20:00hs" style="width:100%" />
+              </div>
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px; color:var(--ink-light);">Régimen Académico:</label>
                 <select id="escCiclo" style="width:100%">
-                  <option value="Anual">Régimen Anual</option>
-                  <option value="Cuatrimestral">Régimen Cuatrimestral</option>
+                  <option value="Anual">Anual</option>
+                  <option value="Cuatrimestral">Cuatrimestral</option>
                 </select>
               </div>
             </div>
-            <button class="success" style="justify-content: center; background: var(--blue);" onclick="agregarMateriaCurso()"><i class="ti ti-plus"></i> Dar de Alta Espacio Curricular</button>
+
+            <button class="success" style="justify-content: center; background: var(--blue);" onclick="agregarMateriaCurso()"><i class="ti ti-plus"></i> Registrar Materia y Calcular Clases</button>
           </div>
         </div>
       </div>
 
       <!-- Tabla General de Espacios Abiertos -->
       <div class="card">
-        <div class="card-title">Mis Espacios Curriculares y Divisiones Asignadas</div>
+        <div class="card-title">Estructura de Horarios y Clases Calculadas por Espacio Curricular</div>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Escuela / Institución</th>
-                <th>Espacio Curricular (Materia)</th>
-                <th>Curso / División</th>
-                <th>Horario Designado</th>
+                <th>Escuela</th>
+                <th>Materia</th>
+                <th>Curso</th>
                 <th>Ciclo Académico</th>
+                <th>Régimen / Días</th>
+                <th class="center">Clases Teóricas</th>
                 <th style="width:80px" class="center">Acciones</th>
               </tr>
             </thead>
@@ -298,7 +329,7 @@ tr:last-child td{border-bottom:none}
                 <th style="width:60px">N°</th>
                 <th>Estudiante</th>
                 <th class="center" style="width:180px">Estado de Asistencia</th>
-                <th>Progreso Relativo</th>
+                <th>Métrica de Control Estadístico en el Ciclo</th>
               </tr>
             </thead>
             <tbody id="asistTableBody"></tbody>
@@ -325,23 +356,23 @@ tr:last-child td{border-bottom:none}
             <div class="row">
               <input type="text" id="clTitulo" placeholder="Tema principal de la clase" style="flex:1;" onchange="autoGuardarEncabezado()" />
               <input type="date" id="clFecha" onchange="autoGuardarEncabezado()" />
-              <input type="number" id="clPonderacion" placeholder="Ponderación % (1-100)" style="width:110px;" onchange="autoGuardarEncabezado()" />
+              <input type="number" id="clPonderacion" placeholder="Ponderación %" style="width:110px;" onchange="autoGuardarEncabezado()" />
             </div>
             <div>
-              <textarea id="clRelatoria" rows="4" placeholder="Planificación corta, secuencia didáctica de hoy o relatoría general del grupo..." onchange="autoGuardarEncabezado()"></textarea>
+              <textarea id="clRelatoria" rows="4" placeholder="Planificación corta o secuencia didáctica del día..." onchange="autoGuardarEncabezado()"></textarea>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-title">👥 Registro Individual: Impacto de Actividades, Calificación y Bitácora Cualitativa</div>
+            <div class="card-title">👥 Calificaciones y Bitácora Cualitativa de Desempeño</div>
             <div class="table-wrapper">
               <table>
                 <thead>
                   <tr>
                     <th style="width:50px;">N°</th>
                     <th style="width:200px;">Estudiante</th>
-                    <th style="width:130px;" class="center">Calificación (Cuali/Num)</th>
-                    <th>Observación Cualitativa Específica de esta Clase</th>
+                    <th style="width:130px;" class="center">Calificación</th>
+                    <th>Observación Cualitativa Específica</th>
                   </tr>
                 </thead>
                 <tbody id="cuadernoAlumnosTableBody"></tbody>
@@ -350,8 +381,8 @@ tr:last-child td{border-bottom:none}
           </div>
           
           <div class="row">
-            <button class="success" onclick="alert('¡Todos los datos de la clase, notas y bitácora se guardaron automáticamente!')"><i class="ti ti-save"></i> Forzar Guardado General</button>
-            <button class="danger" onclick="eliminarClaseActual()"><i class="ti ti-trash"></i> Eliminar Registro de esta Clase</button>
+            <button class="success" onclick="alert('¡Todos los datos guardados automáticamente!')"><i class="ti ti-save"></i> Forzar Guardado</button>
+            <button class="danger" onclick="eliminarClaseActual()"><i class="ti ti-trash"></i> Eliminar Clase</button>
           </div>
         </div>
       </div>
@@ -366,16 +397,15 @@ tr:last-child td{border-bottom:none}
 
 <script>
 // ========================================================
-// MOTOR CENTRAL LOCAL-FIRST (PERSISTENCIA TOTAL DE DATOS)
+// MOTOR CENTRAL LOCAL-FIRST CON MÉTRICAS ESTADÍSTICAS
 // ========================================================
-const STORAGE_KEY = "SISTEMA_DOCENTE_INTEGRADO_V4";
+const STORAGE_KEY = "SISTEMA_DOCENTE_INTEGRADO_V5";
 
-window.escuelasBase = []; // Estructura unificada: [{id, nombre}]
-window.cursos = [];       // Estructura ramificada: [{id, escuelaId, escuelaNombre, materia, nombre, horario, ciclo}]
+window.escuelasBase = []; 
+window.cursos = [];       
 window.alumnos = {}; 
 window.asistencias = {}; 
 window.clases = []; 
-
 window.claseSeleccionadaId = null;
 
 function guardarTodo() {
@@ -413,8 +443,32 @@ function switchTab(tabId, btn) {
   if(tabId === 'cuaderno-aula') renderCuaderno();
 }
 
+// Algoritmo matemático para determinar cuántos días de clase específicos caen en un rango de fechas
+function calcularCantidadClasesTeoricas(fechaInicio, fechaFin, diasSeleccionados) {
+  if(!fechaInicio || !fechaFin || diasSeleccionados.length === 0) return 0;
+  
+  let start = new Date(fechaInicio + 'T00:00:00');
+  let end = new Date(fechaFin + 'T00:00:00');
+  let contador = 0;
+  
+  // Clonar fecha para iterar sin mutar
+  let iterador = new Date(start);
+  while (iterador <= end) {
+    let elDiaDeLaSemana = iterador.getDay(); // Dom=0, Lun=1, Mar=2, Mié=3, Jue=4, Vie=5, Sáb=6
+    if (diasSeleccionados.includes(elDiaDeLaSemana.toString())) {
+      contador++;
+    }
+    iterador.setDate(iterador.getDate() + 1);
+  }
+  return contador;
+}
+
+function obtenerNombresDias(diasArr) {
+  const mapa = {"1":"Lu","2":"Ma","3":"Mi","4":"Ju","5":"Vi"};
+  return diasArr.map(d => mapa[d] || '').filter(Boolean).join('-');
+}
+
 function sincronizarSelectoresCursos() {
-  // Sincronizar selectores de Cursos/Materias globales
   const selectores = ['dashCurso', 'aluCursoFiltro', 'asistCurso', 'cuadCurso'];
   const cacheValores = {};
   
@@ -438,7 +492,6 @@ function sincronizarSelectoresCursos() {
     }
   });
 
-  // Sincronizar el selector interno de Escuelas Base
   const selBase = document.getElementById('escSelectorBase');
   if(selBase) {
     selBase.innerHTML = '';
@@ -451,12 +504,11 @@ function sincronizarSelectoresCursos() {
   }
 }
 
-// --- NUEVA GESTIÓN DE ESCUELAS Y CURSOS (RAMIFICADA) ---
+// --- GESTIÓN DE ESCUELAS ---
 function agregarEscuelaBase() {
   const nombre = document.getElementById('escNumero').value.trim();
-  if(!nombre) { alert("Ingrese el nombre o número de la institución."); return; }
+  if(!nombre) { alert("Ingrese el nombre de la institución."); return; }
 
-  // Evitar duplicados simples
   if(escuelasBase.some(e => e.nombre.toLowerCase() === nombre.toLowerCase())) {
     alert("Esta institución ya se encuentra registrada.");
     return;
@@ -468,18 +520,28 @@ function agregarEscuelaBase() {
   
   guardarTodo();
   sincronizarSelectoresCursos();
-  alert(`"${nombre}" guardada con éxito. Ya podés asignarle materias en el bloque derecho.`);
+  alert(`"${nombre}" guardada correctamente.`);
 }
 
 function agregarMateriaCurso() {
   const escId = document.getElementById('escSelectorBase').value;
   const mat = document.getElementById('escMateria').value.trim();
   const cur = document.getElementById('escCurso').value.trim();
-  const hor = document.getElementById('escHorario').value.trim();
+  const fInicio = document.getElementById('escFechaInicio').value;
+  const fFin = document.getElementById('escFechaFin').value;
+  const hTexto = document.getElementById('escHorarioTexto').value.trim();
   const cic = document.getElementById('escCiclo').value;
 
-  if(!escId) { alert("Primero debés registrar al menos una escuela en el panel izquierdo."); return; }
-  if(!mat || !cur) { alert("Por favor complete los campos obligatorios: Materia y Curso/División."); return; }
+  // Capturar días de la semana seleccionados
+  const checkboxes = document.querySelectorAll('input[name="escDias"]:checked');
+  const diasSeleccionados = Array.from(checkboxes).map(cb => cb.value);
+
+  if(!escId) { alert("Por favor, seleccione una Escuela Base."); return; }
+  if(!mat || !cur || !fInicio || !fFin) { alert("Complete los campos obligatorios: Materia, Curso e Intervalo de fechas del Ciclo Lectivo."); return; }
+  if(diasSeleccionados.length === 0) { alert("Debe tildar al menos un día de la semana para estructurar el horario."); return; }
+
+  const totalClasesTeoricas = calcularCantidadClasesTeoricas(fInicio, fFin, diasSeleccionados);
+  if(totalClasesTeoricas <= 0) { alert("Revise las fechas. No se detectaron días hábiles de cursada en ese rango."); return; }
 
   const escuelaObj = escuelasBase.find(e => e.id === escId);
 
@@ -489,16 +551,22 @@ function agregarMateriaCurso() {
     escuelaNombre: escuelaObj.nombre, 
     materia: mat, 
     nombre: cur, 
-    horario: hor, 
-    ciclo: cic 
+    fechaInicio: fInicio,
+    fechaFin: fFin,
+    diasSemana: diasSeleccionados,
+    horarioTexto: hTexto || 'No especificado', 
+    ciclo: cic,
+    clasesPlanificadas: totalClasesTeoricas
   };
 
   cursos.push(nuevoCurso);
   alumnos[nuevoCurso.id] = [];
 
+  // Reset de campos
   document.getElementById('escMateria').value = '';
   document.getElementById('escCurso').value = '';
-  document.getElementById('escHorario').value = '';
+  document.getElementById('escHorarioTexto').value = '';
+  document.querySelectorAll('input[name="escDias"]').forEach(cb => cb.checked = false);
 
   guardarTodo();
   sincronizarSelectoresCursos();
@@ -509,20 +577,22 @@ function renderEscuelas() {
   const tbody = document.getElementById('escuelasTableBody');
   let html = '';
   cursos.forEach(c => {
+    const diasStr = obtenerNombresDias(c.diasSemana);
     html += `<tr>
       <td><strong>${c.escuelaNombre}</strong></td>
       <td>${c.materia}</td>
       <td><span class="badge bg-blue">${c.nombre}</span></td>
-      <td>${c.horario || 'No definido'}</td>
-      <td><span class="badge bg-amber">${c.ciclo}</span></td>
+      <td><span class="badge bg-amber">${c.ciclo} (${c.fechaInicio.split('-')[0]})</span></td>
+      <td><small>${diasStr} — ${c.horarioTexto}</small></td>
+      <td class="center" style="font-weight:700; color:var(--green); font-size:14px;">${c.clasesPlanificadas}</td>
       <td class="center"><button class="danger" style="padding:4px 8px;" onclick="eliminarCursoMateria('${c.id}')"><i class="ti ti-trash"></i></button></td>
     </tr>`;
   });
-  tbody.innerHTML = html || `<tr><td colspan="6" class="center">No hay espacios curriculares creados todavía.</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="7" class="center">No hay materias ni horarios asignados todavía.</td></tr>`;
 }
 
 function eliminarCursoMateria(id) {
-  if(confirm("¿Está seguro de eliminar esta materia/curso? Se perderán todos sus alumnos, asistencias, cuadernos y notas vinculadas.")) {
+  if(confirm("¿Eliminar este espacio curricular? Se borrarán sus métricas asociadas.")) {
     cursos = cursos.filter(c => c.id !== id);
     delete alumnos[id];
     delete asistencias[id];
@@ -533,19 +603,17 @@ function eliminarCursoMateria(id) {
   }
 }
 
-// --- ETIQUETA GESTIÓN ALUMNOS ---
+// --- GESTIÓN ALUMNOS ---
 function agregarAlumno() {
   const cId = document.getElementById('aluCursoFiltro').value;
   const nom = document.getElementById('aluNombre').value.trim();
   const cond = document.getElementById('aluCondicion').value;
 
-  if(!cId) { alert("Primero debés dar de alta una Escuela y una Materia en la pestaña de Estructuras."); return; }
-  if(!nom) { alert("Ingrese el nombre completo del estudiante."); return; }
+  if(!cId) { alert("Seleccione un curso/materia destino."); return; }
+  if(!nom) { alert("Ingrese el nombre completo."); return; }
 
   if(!alumnos[cId]) alumnos[cId] = [];
-  const nuevoNum = alumnos[cId].length + 1;
-
-  alumnos[cId].push({ id: 'al_' + Date.now(), num: nuevoNum, nombre: nom, cond: cond });
+  alumnos[cId].push({ id: 'al_' + Date.now(), num: alumnos[cId].length + 1, nombre: nom, cond: cond });
   document.getElementById('aluNombre').value = '';
 
   guardarTodo();
@@ -555,7 +623,7 @@ function agregarAlumno() {
 function renderAlumnos() {
   const cId = document.getElementById('aluCursoFiltro').value;
   const tbody = document.getElementById('alumnosTableBody');
-  if(!cId) { tbody.innerHTML = `<tr><td colspan="4" class="center">Seleccione o cree una estructura curricular primero.</td></tr>`; return; }
+  if(!cId) { tbody.innerHTML = `<tr><td colspan="4" class="center">Seleccione un curso.</td></tr>`; return; }
 
   const lista = alumnos[cId] || [];
   let html = '';
@@ -569,18 +637,18 @@ function renderAlumnos() {
       <td class="center"><button class="danger" style="padding:4px 8px" onclick="eliminarAlumno('${cId}','${al.id}')">✕</button></td>
     </tr>`;
   });
-  tbody.innerHTML = html || `<tr><td colspan="4" class="center">No hay alumnos matriculados en esta sección.</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="4" class="center">Sin alumnos matriculados.</td></tr>`;
 }
 
 function eliminarAlumno(cId, alId) {
-  if(confirm("¿Remover estudiante de la nómina?")) {
+  if(confirm("¿Remover estudiante?")) {
     alumnos[cId] = alumnos[cId].filter(a => a.id !== alId);
     guardarTodo();
     renderAlumnos();
   }
 }
 
-// --- ETIQUETA ASISTENCIA DIARIA ---
+// --- CÁLCULO ESTADÍSTICO DE ASISTENCIA DIARIA ---
 function renderAsistencia() {
   const cId = document.getElementById('asistCurso').value;
   const fecha = document.getElementById('asistFecha').value;
@@ -595,7 +663,7 @@ function renderAsistencia() {
 
   listaAl.forEach(al => {
     const estado = asistencias[cId][fecha][al.id] || 'P';
-    const metricas = calcularAsistenciaAlumno(cId, al.id);
+    const metricas = calcularAsistenciaEstadistica(cId, al.id);
 
     html += `<tr>
       <td class="center">${al.num}</td>
@@ -607,7 +675,7 @@ function renderAsistencia() {
           <option value="T" ${estado==='T'?'selected':''}>Tarde (T)</option>
         </select>
       </td>
-      <td>Faltas acumuladas: <span style="font-weight:700">${metricas.faltas}</span> — Porcentaje: <span class="badge ${metricas.porcentaje < 75 ? 'bg-red':'bg-green'}">${metricas.porcentaje}%</span></td>
+      <td>Presencias Reales: <strong>${metricas.presencias}</strong> | Inasistencias: <strong>${metricas.faltas}</strong> | Porcentaje Presentismo Actual: <span class="badge ${metricas.porcentaje < 75 ? 'bg-red':'bg-green'}">${metricas.porcentaje}%</span></td>
     </tr>`;
   });
 
@@ -619,20 +687,27 @@ function cambiarAsistenciaEstado(cId, fecha, alId, valor) {
   guardarTodo();
 }
 
-function calcularAsistenciaAlumno(cId, alId) {
+function calcularAsistenciaEstadistica(cId, alId) {
+  const cursoObj = cursos.find(c => c.id === cId);
+  const totalClasesCiclo = cursoObj ? cursoObj.clasesPlanificadas : 1;
   const registros = asistencias[cId] || {};
-  let clasesDictadas = Object.keys(registros).length; 
-  if(clasesDictadas === 0) clasesDictadas = 1; // Prevenir división por cero
+  
+  let clasesDictadasHastaHoy = Object.keys(registros).length;
+  if(clasesDictadasHastaHoy === 0) return { presencias: 0, faltas: 0, porcentaje: 100 };
 
-  let A = 0, T = 0;
+  let A = 0, T = 0, P = 0;
   for(let f in registros) {
     if(registros[f][alId] === 'A') A++;
-    if(registros[f][alId] === 'T') T++;
+    else if(registros[f][alId] === 'T') { T++; P += 0.5; }
+    else { P++; } // Presente por defecto o marcado explícito
   }
+
   const faltas = A + (T * 0.5);
-  let pct = Math.round(((clasesDictadas - faltas) / clasesDictadas) * 100);
-  if(pct < 0) pct = 0;
-  return { faltas, porcentaje: pct };
+  // Métrica estadística porcentual calculada sobre las clases ejecutadas a la fecha
+  let pct = Math.round((P / clasesDictadasHastaHoy) * 100);
+  if (isNaN(pct) || pct < 0) pct = 0;
+
+  return { presencias: P, faltas: faltas, porcentaje: pct };
 }
 
 // --- CUADERNO DE AULA INTEGRADO ---
@@ -655,17 +730,17 @@ function renderCuaderno() {
     </div>`;
   });
 
-  sidebar.innerHTML = html || '<div class="center" style="padding:15px; color:var(--ink-light)">No hay clases registradas. Presione "Registrar Nueva Clase".</div>';
+  sidebar.innerHTML = html || '<div class="center" style="padding:15px; color:var(--ink-light)">No hay clases registradas.</div>';
 }
 
 function nuevaClaseCuaderno() {
   const cId = document.getElementById('cuadCurso').value;
-  if(!cId) { alert("Seleccione un espacio curricular primero."); return; }
+  if(!cId) { alert("Seleccione un espacio curricular."); return; }
 
   const nueva = {
     id: 'cl_' + Date.now(),
     cursoId: cId,
-    titulo: 'Clase Nueva / Tema del Día',
+    titulo: 'Clase Nueva / Secuencia del Día',
     fecha: new Date().toISOString().split('T')[0],
     ponderacion: 10,
     relatoria: '',
@@ -709,19 +784,19 @@ function renderTablaAlumnosClase(cl) {
       <td class="center">${al.num}</td>
       <td><strong>${al.nombre}</strong></td>
       <td class="center">
-        <input type="text" value="${nota}" placeholder="Cuali/Num" 
+        <input type="text" value="${nota}" placeholder="Nota" 
                style="width:90px; text-align:center; padding:5px; font-weight:700;"
                onchange="autoGuardarFilaAlumno('${cl.id}','${al.id}','nota',this.value)" />
       </td>
       <td>
-        <input type="text" value="${obs}" placeholder="Escriba el desempeño cualitativo de hoy..." 
+        <input type="text" value="${obs}" placeholder="Desempeño observado en la secuencia..." 
                style="width:100%; padding:5px;"
                onchange="autoGuardarFilaAlumno('${cl.id}','${al.id}','obs',this.value)" />
       </td>
     </tr>`;
   });
 
-  tbody.innerHTML = html || `<tr><td colspan="4" class="center">No hay alumnos en este curso. Matricúlelos en la pestaña Alumnos.</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="4" class="center">Matrícula vacía en este curso.</td></tr>`;
 }
 
 function autoGuardarEncabezado() {
@@ -747,7 +822,7 @@ function autoGuardarFilaAlumno(clId, alId, campo, valor) {
 
 function eliminarClaseActual() {
   if(!window.claseSeleccionadaId) return;
-  if(confirm("¿Eliminar por completo esta clase junto con todas las notas y observaciones de los alumnos?")) {
+  if(confirm("¿Eliminar registro de esta clase?")) {
     clases = clases.filter(x => x.id !== window.claseSeleccionadaId);
     window.claseSeleccionadaId = null;
     guardarTodo();
@@ -775,7 +850,7 @@ function calcularHistorialDocente(cId, alId) {
   });
 
   const promedio = cantNotas > 0 ? (sumaNotas / cantNotas).toFixed(1) : 'S/N';
-  const comentariosTexto = ultimosComentarios.slice(-2).reverse().join(' // ') || 'Sin novedades registradas';
+  const comentariosTexto = ultimosComentarios.slice(-2).reverse().join(' // ') || 'Sin registros cualitativos';
 
   return { promedio, bitacora: comentariosTexto };
 }
@@ -786,42 +861,46 @@ function renderDashboard() {
   const tbody = document.getElementById('dashTableBody');
   
   if(!cId) {
-    tbody.innerHTML = `<tr><td colspan="7" class="center">Configure una escuela, materia y alumnos para comenzar.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="center">Cargue una estructura para visualizar métricas estadísticas.</td></tr>`;
     return;
   }
 
+  const cursoObj = cursos.find(c => c.id === cId);
   const listAl = alumnos[cId] || [];
   let html = '';
-  let sumAsistencia = 0, totalEnRiesgo = 0;
+  let sumAsistencia = 0;
 
   listAl.forEach(al => {
-    const asis = calcularAsistenciaAlumno(cId, al.id);
+    const asis = calcularAsistenciaEstadistica(cId, al.id);
     const historial = calcularHistorialDocente(cId, al.id);
     sumAsistencia += asis.porcentaje;
-    if(asis.porcentaje < 75) totalEnRiesgo++;
 
-    let bAsistClass = asis.porcentaje >= 85 ? 'bg-green' : (asis.porcentaje >= 75 ? 'bg-amber' : 'bg-red');
+    let bAsistClass = asis.porcentaje >= 80 ? 'bg-green' : (asis.porcentaje >= 75 ? 'bg-amber' : 'bg-red');
 
     html += `<tr>
       <td class="center">${al.num}</td>
       <td><strong>${al.nombre}</strong></td>
       <td><span class="badge bg-blue">${al.cond}</span></td>
-      <td class="center" style="font-weight:600;">${asis.faltas}</td>
+      <td class="center" style="color:var(--green); font-weight:bold;">${asis.presencias}</td>
+      <td class="center" style="color:var(--red); font-weight:bold;">${asis.faltas}</td>
       <td class="center"><span class="badge ${bAsistClass}">${asis.porcentaje}%</span></td>
       <td class="center" style="font-weight:700; color:var(--blue);">${historial.promedio}</td>
       <td style="color:var(--ink-light); font-size:11px;">${historial.bitacora}</td>
     </tr>`;
   });
 
-  tbody.innerHTML = html || `<tr><td colspan="7" class="center">No hay estudiantes cargados en este curso. Vaya a "Gestión Alumnos".</td></tr>`;
+  tbody.innerHTML = html || `<tr><td colspan="8" class="center">No hay alumnos en este curso.</td></tr>`;
+
+  // Actualizar paneles estadísticos globales
+  const clasesDictadasAFecha = asistencias[cId] ? Object.keys(asistencias[cId]).length : 0;
 
   document.getElementById('lblMatricula').textContent = listAl.length;
   document.getElementById('lblAsistencia').textContent = listAl.length ? Math.round(sumAsistencia / listAl.length) + '%' : '100%';
-  document.getElementById('lblRiesgo').textContent = totalEnRiesgo;
-  document.getElementById('lblTareas').textContent = (clases.filter(x => x.cursoId === cId)).length;
+  document.getElementById('lblClasesPlanif').textContent = cursoObj ? cursoObj.clasesPlanificadas : 0;
+  document.getElementById('lblClasesDadas').textContent = clasesDictadasAFecha;
 }
 
-// --- REPORTE PDF ---
+// --- REPORTE PDF PROFESIONAL ---
 function generarReportePDF() {
   const cId = document.getElementById('dashCurso').value;
   if(!cId) return;
@@ -833,68 +912,48 @@ function generarReportePDF() {
   const copiaOrdenada = [...listAl].sort((a,b) => a.nombre.localeCompare(b.nombre));
 
   let filas = '';
-  let totalFaltasCurso = 0, alumnosRiesgo = 0;
-
   copiaOrdenada.forEach((al, idx) => {
-    const asis = calcularAsistenciaAlumno(cId, al.id);
+    const asis = calcularAsistenciaEstadistica(cId, al.id);
     const historial = calcularHistorialDocente(cId, al.id);
-    totalFaltasCurso += asis.faltas;
-    if(asis.porcentaje < 75) alumnosRiesgo++;
 
     filas += `<tr>
       <td style="text-align:center">${idx + 1}</td>
       <td><strong>${al.nombre}</strong></td>
       <td style="text-align:center">${al.cond}</td>
+      <td style="text-align:center">${asis.presencias}</td>
       <td style="text-align:center">${asis.faltas}</td>
       <td style="text-align:center; font-weight:600;">${asis.porcentaje}%</td>
-      <td style="text-align:center; font-weight:bold;">${historial.promedio}</td>
+      <td style="text-align:center; font-weight:bold; color:#245280;">${historial.promedio}</td>
       <td style="font-size:10px; color:#5C4A30;">${historial.bitacora}</td>
     </tr>`;
   });
-
-  const clasesCurso = clases.filter(x => x.cursoId === cId).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-  let bloqueSecuencias = '';
-  if(clasesCurso.length > 0) {
-    bloqueSecuencias += `<div style="font-size:12px; font-weight:700; text-transform:uppercase; margin-top:25px; border-left:3px solid #7A6F4D; padding-left:6px;">Relatoría de Secuencias Didácticas y Temas Abordados</div>`;
-    clasesCurso.forEach(cl => {
-      bloqueSecuencias += `<div style="background:#FAF8F4; padding:8px; margin-top:6px; border:1px solid #E3DEC3; border-radius:4px; font-size:11px;">
-        <strong>Fecha: ${cl.fecha.split('-').reverse().join('/')} — ${cl.titulo}</strong> <span style="color:#A06418">(Pond: ${cl.ponderacion}%)</span><br>
-        <p style="margin-top:2px; color:#2B261F; white-space:pre-line;">${cl.relatoria || 'Sin desglose de relatoría redactado.'}</p>
-      </div>`;
-    });
-  }
 
   const lienzo = document.getElementById('reporteContenido');
   lienzo.innerHTML = `
     <div class="rep-header">
       <div>
-        <h1 style="font-size:22px; text-transform:uppercase; font-weight:700;">Informe Analítico de Trayectorias y Secuencias</h1>
-        <p style="font-size:13px; color:#6E6557; margin-top:4px;">Institución: ${cursoActivo.escuelaNombre} — Espacio Curricular: ${cursoActivo.materia}</p>
+        <h1 style="font-size:20px; text-transform:uppercase; font-weight:700;">Cuadro Estadístico y Analítico de Trayectorias</h1>
+        <p style="font-size:12px; color:#6E6557; margin-top:4px;">Institución: ${cursoActivo.escuelaNombre} — Espacio Curricular: ${cursoActivo.materia}</p>
       </div>
       <div style="font-size:11px; text-align:right; line-height:1.4;">
         <strong>Curso: ${cursoActivo.nombre}</strong><br>
-        Horario: ${cursoActivo.horario || 'No especificado'}<br>
-        Emisión: ${new Date().toLocaleDateString('es-AR')}<br>
-        Régimen: ${cursoActivo.ciclo}
+        Régimen: ${cursoActivo.ciclo}<br>
+        Fechas Ciclo: ${cursoActivo.fechaInicio.split('-').reverse().join('/')} al ${cursoActivo.fechaFin.split('-').reverse().join('/')}
       </div>
     </div>
 
     <div class="rep-info-block">
       <div class="rep-info-box">
-        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Matrícula Total</div>
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Matrícula Estudiantes</div>
         <div style="font-size:18px; font-weight:700;">${listAl.length}</div>
       </div>
       <div class="rep-info-box">
-        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Alumnos en Alerta Riesgo</div>
-        <div style="font-size:18px; font-weight:700; color:#9E3224;">${alumnosRiesgo}</div>
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Clases Totales Estructuradas</div>
+        <div style="font-size:18px; font-weight:700; color:#2A5C3F;">${cursoActivo.clasesPlanificadas}</div>
       </div>
       <div class="rep-info-box">
-        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Inasistencias del Curso</div>
-        <div style="font-size:18px; font-weight:700;">${totalFaltasCurso}</div>
-      </div>
-      <div class="rep-info-box">
-        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Clases Dictadas</div>
-        <div style="font-size:18px; font-weight:700;">${clasesCurso.length}</div>
+        <div style="font-size:9px; text-transform:uppercase; color:#6E6557; font-weight:600;">Clases Ejecutadas a la Fecha</div>
+        <div style="font-size:18px; font-weight:700;">${asistencias[cId] ? Object.keys(asistencias[cId]).length : 0}</div>
       </div>
     </div>
 
@@ -902,20 +961,19 @@ function generarReportePDF() {
       <thead>
         <tr style="background:#EFECE3;">
           <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">N°</th>
-          <th style="border:1px solid #E3DEC3; padding:6px; width:180px;">Apellido y Nombre</th>
+          <th style="border:1px solid #E3DEC3; padding:6px;">Apellido y Nombre</th>
           <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Condición</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Presencias</th>
           <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Faltas</th>
-          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">% Asist.</th>
+          <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">% Asistencia</th>
           <th style="border:1px solid #E3DEC3; padding:6px; text-align:center;">Promedio</th>
-          <th style="border:1px solid #E3DEC3; padding:6px;">Historial de Impacto Cualitativo</th>
+          <th style="border:1px solid #E3DEC3; padding:6px;">Observaciones Cualitativas del Trayecto</th>
         </tr>
       </thead>
       <tbody>
-        ${filas || '<tr><td colspan="7" style="text-align:center; padding:10px;">No hay datos para imprimir.</td></tr>'}
+        ${filas || '<tr><td colspan="8" style="text-align:center; padding:10px;">Sin registros para imprimir.</td></tr>'}
       </tbody>
     </table>
-
-    ${bloqueSecuencias}
   `;
 
   const panelPDF = document.getElementById('reportePDF');
@@ -926,35 +984,37 @@ function generarReportePDF() {
   }, 150);
 }
 
-// INICIALIZACIÓN CON DATOS DEMO DE LA NUEVA JERARQUÍA
+// INICIALIZACIÓN POR DEFECTO
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('asistFecha').value = new Date().toISOString().split('T')[0];
 
+  // Valores sugeridos por defecto para agilizar la carga en el formulario
+  document.getElementById('escFechaInicio').value = "2026-03-02";
+  document.getElementById('escFechaFin').value = "2026-12-04";
+
   if(!cargarTodo()) {
-    // Escuelas Base Demo
     escuelasBase = [
-      { id: 'esc_demo1', nombre: 'Escuela N° 753' },
-      { id: 'esc_demo2', nombre: 'Colegio Politécnico' }
+      { id: 'esc_demo1', nombre: 'Escuela N° 753' }
     ];
-    // Cursos asignados a esas escuelas demo
     cursos = [
-      { id: 'c_demo1', escuelaId: 'esc_demo1', escuelaNombre: 'Escuela N° 753', materia: 'Administración y Liq. de Sueldos', nombre: '4to II - Módulo A', horario: 'Lun 18-20hs', ciclo: 'Cuatrimestral' },
-      { id: 'c_demo2', escuelaId: 'esc_demo1', escuelaNombre: 'Escuela N° 753', materia: 'Economía Política', nombre: '5to I', horario: 'Mie 14-16hs', ciclo: 'Anual' }
+      { 
+        id: 'c_demo1', 
+        escuelaId: 'esc_demo1', 
+        escuelaNombre: 'Escuela N° 753', 
+        materia: 'Economía Política', 
+        nombre: '5to I', 
+        fechaInicio: '2026-03-02',
+        fechaFin: '2026-12-04',
+        diasSemana: ["1", "3"], // Lunes y Miércoles
+        horarioTexto: '14:00 a 16:00hs', 
+        ciclo: 'Anual',
+        clasesPlanificadas: 78 // Calculadas matemáticamente por el rango base
+      }
     ];
     alumnos['c_demo1'] = [
       { id: 'al_demo1', num: 1, nombre: 'Álvarez, Martina', cond: 'Regular' },
       { id: 'al_demo2', num: 2, nombre: 'García, Valentina', cond: 'Regular' }
     ];
-    clases = [{
-      id: 'cl_init_demo',
-      cursoId: 'c_demo1',
-      titulo: 'Introducción a Convenios Colectivos',
-      fecha: new Date().toISOString().split('T')[0],
-      ponderacion: 15,
-      relatoria: 'Se presentó el artículo 14 bis de la CN y tipos de paritarias.',
-      notas: { 'al_demo1': '9', 'al_demo2': '7' },
-      observaciones: { 'al_demo1': 'Comprende rápido las escalas salariales.', 'al_demo2': 'Le costó calcular las horas extras.' }
-    }];
     guardarTodo();
   }
 
