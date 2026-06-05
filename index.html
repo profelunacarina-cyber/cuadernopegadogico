@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Seguimiento Docente Pro · Sincronizado & Offline</title>
+<style>
+.ti { display: inline-block; font-style: normal; line-height: 1; font-size: 14px; }
+.ti.ti-school::before { content: "🏫"; }
+.ti.ti-settings::before { content: "⚙️"; }
+.ti.ti-info-circle::before { content: "ℹ️"; }
+.ti.ti-file-export::before { content: "📄"; }
+.ti.ti-plus::before { content: "➕"; font-size: 11px; }
+.ti.ti-trash::before { content: "🗑️"; }
+.ti.ti-download::before { content: "⬇️"; }
+.ti.ti-upload::before { content: "⬆️"; }
+.ti.ti-database-export::before { content: "💾"; }
+.ti.ti-alert-circle::before { content: "⚠️"; }
+.ti.ti-alert-triangle::before { content: "⚠️"; }
+.ti.ti-notebook::before { content: "📓"; }
+.ti.ti-book::before { content: "📖"; }
+.ti.ti-cloud-check::before { content: "☁️"; }
+</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#FAF8F4;font-family:'Segoe UI',Tahoma,sans-serif;color:#1A1208;font-size:13px}
+:root{
+  --ink:#1A1208;--ink2:#5C4A30;--cream:#FAF8F4;--sand:#EDE8DF;--bark:#B89A6A;
+  --white:#FFFFFF;--border:#DDD5C8;--border2:#C8BCA8;
+  --green:#2E6B4A;--gl:#E8F5EE;--gc:#1A4A30;
+  --red:#B83A2A;--rl:#FAECEA;--rc:#7A2218;
+  --amber:#B87210;--al:#FDF3E2;--ac:#7A4C08;
+  --blue:#1E5C9A;--bl:#E8F0FA;--bc:#0C3C6A;
+  --purple:#5040B0;--pl:#EEECFC;--pc:#302880;
+}
+#app{min-height:100vh}
+.topbar{background:var(--ink);color:#F5EFE6;padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:15px;font-weight:600;letter-spacing:.3px}
+.topbar-sub{font-size:11px;color:var(--bark);margin-top:2px}
+.nav{background:#261C0C;display:flex;gap:1px;padding:0 16px;overflow-x:auto}
+.nav-btn{background:transparent;border:none;color:#A08060;padding:10px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Segoe UI',sans-serif;transition:color .15s}
+.nav-btn:hover{color:#F5EFE6}
+.nav-btn.on{color:#F5EFE6;border-bottom-color:var(--bark)}
+.body{padding:14px 16px}
+.sec{display:none}.sec.on{display:block}
+
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+select,input[type=text],input[type=date],input[type=number]{
+  background:var(--white);border:1px solid var(--border2);border-radius:6px;
+  padding:6px 10px;font-size:12px;color:var(--ink);font-family:'Segoe UI',sans-serif;outline:none}
+select:focus,input:focus{border-color:var(--bark);box-shadow:0 0 0 2px rgba(184,154,106,.2)}
+button{background:var(--ink);color:#F5EFE6;border:none;border-radius:6px;padding:7px 13px;
+  font-size:12px;cursor:pointer;font-family:'Segoe UI',sans-serif;transition:opacity .15s}
+button:hover{opacity:.85}
+button.sec-btn{background:var(--white);color:var(--ink);border:1px solid var(--border2)}
+button.grn{background:var(--green)}
+button.amb{background:var(--amber)}
+button.bl{background:var(--blue)}
+button.red{background:var(--red)}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.b-green{background:var(--gl);color:var(--gc)}
+.b-amber{background:var(--al);color:var(--ac)}
+.b-red{background:var(--rl);color:var(--rc)}
+.b-blue{background:var(--bl);color:var(--bc)}
+.b-purple{background:var(--pl);color:var(--pc)}
+.b-gray{background:var(--sand);color:var(--ink2)}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.card-head{font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center}
+.stat-l{font-size:10px;color:var(--ink2);margin-bottom:3px}
+.stat-v{font-size:22px;font-weight:700;color:var(--ink)}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--sand);padding:8px 10px;text-align:left;font-weight:600;color:var(--ink2);border-bottom:1px solid var(--border2);font-size:11px}
+tbody tr:hover{background:var(--cream)}
+td{padding:8px 10px;border-bottom:1px solid var(--sand);vertical-align:middle}
+.tw{overflow-x:auto}
+
+.att-btn{border:none;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Segoe UI',sans-serif}
+.ap{background:var(--gl);color:var(--gc)}.ap.on{background:var(--green);color:#fff}
+.aa{background:var(--rl);color:var(--rc)}.aa.on{background:var(--red);color:#fff}
+.at{background:var(--al);color:var(--ac)}.at.on{background:var(--amber);color:#fff}
+.aj{background:var(--bl);color:var(--bc)}.aj.on{background:var(--blue);color:#fff}
+
+.pbar{background:var(--sand);border-radius:6px;height:6px;overflow:hidden;width:70px;display:inline-block;vertical-align:middle;margin-right:5px}
+.pbf{height:6px;border-radius:6px}
+
+.ni{width:52px;border:1px solid var(--border2);border-radius:5px;padding:3px 6px;font-size:12px;text-align:center;background:var(--white);color:var(--ink);font-family:'Segoe UI',sans-serif}
+.nf-cell{font-weight:700;font-size:13px}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal{background:var(--white);border-radius:12px;padding:18px;width:90%;max-width:460px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:14px}
+.modal label{font-size:11px;color:var(--ink2);display:block;margin:10px 0 3px}
+.modal input,.modal select{width:100%}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+
+.alert-box{padding:9px 13px;border-radius:7px;font-size:12px;margin-bottom:8px;display:flex;gap:6px;align-items:flex-start}
+.alert-warn{background:var(--al);border:1px solid #E0A030;color:var(--ac)}
+.alert-danger{background:var(--rl);border:1px solid #D08070;color:var(--rc)}
+.alert-info{background:var(--bl);border:1px solid #70A0D0;color:var(--bc)}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:10px;font-size:11px;background:var(--sand);color:var(--ink2)}
+textarea{width:100%;border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:12px;font-family:'Segoe UI',sans-serif;color:var(--ink);resize:vertical;background:var(--white);outline:none}
+
+.obs-item{border-left:3px solid var(--bark);border-radius:0;padding:9px 12px;margin-bottom:8px;background:var(--al)}
+.obs-meta{font-size:10px;color:var(--ac);margin-top:4px}
+.empty{color:var(--ink2);font-size:12px;padding:16px 0;text-align:center}
+
+.plan-grid{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+@media (max-width: 768px) { .plan-grid{grid-template-columns:1fr} }
+.clase-item{padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--white)}
+.clase-item.active{border-color:var(--bark);background:var(--al)}
+.prev-relatoria{background:var(--pl);border:1px dashed var(--border2);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px}
+
+/* Indicador de Estado de Conexión */
+.network-status { font-size: 11px; padding: 4px 8px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 4px;}
+.net-online { background: var(--gl); color: var(--gc); }
+.net-offline { background: var(--rl); color: var(--rc); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title"><i class="ti ti-school" style="margin-right:6px"></i>Seguimiento Docente Pro</div>
+    <div class="topbar-sub" id="topSub">Conectando a la base de datos en la nube...</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div id="networkIndicator" class="network-status net-online">🌐 En Línea (Nube)</div>
+    <button class="sec-btn" style="font-size:11px" onclick="openModal('configModal')"><i class="ti ti-settings"></i> Configurar</button>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn on" onclick="goTab('resumen',this)">Resumen</button>
+  <button class="nav-btn" onclick="goTab('planif',this)">Planificación</button>
+  <button class="nav-btn" onclick="goTab('asistencia',this)">Asistencia</button>
+  <button class="nav-btn" onclick="goTab('notas',this)">Calificaciones</button>
+  <button class="nav-btn" onclick="goTab('alumnos',this)">Alumnos</button>
+  <button class="nav-btn" onclick="goTab('obs',this)">Observaciones</button>
+</div>
+
+<div class="body">
+
+<div id="sec-resumen" class="sec on">
+  <div class="alert-box alert-info" id="753ContextInfo" style="display:none;">
+    <i class="ti ti-info-circle"></i> 
+    <strong>Régimen Escuela 753 Detectado:</strong> Cursada intensiva cuatrimestralizada (19 semanas). Base de cálculo: 37 días reales de clase por cohorte. Límite de inasistencias: 9 faltas.
+  </div>
+  <div class="stats" id="resStats"></div>
+  <div id="resAlerts"></div>
+  <div class="card">
+    <div class="card-head" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+      <span>Estructura de Cursos Activos</span>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <select id="repCurso" style="font-size:11px; padding:4px 8px;"></select>
+        <button class="grn" style="font-size:11px;" onclick="generarReportePDF()"><i class="ti ti-file-export"></i> Exportar reporte PDF</button>
+      </div>
+    </div>
+    <div id="resCursos"></div>
+  </div>
+</div>
+
+<div id="sec-planif" class="sec">
+  <div class="row">
+    <select id="plaEsc" onchange="updateMateriaSelect('plaEsc', 'plaMat', 'plaCurso'); renderPlanif();"></select>
+    <select id="plaMat" onchange="updateCursoSelect('plaEsc', 'plaMat', 'plaCurso'); renderPlanif();"></select>
+    <select id="plaCurso" onchange="renderPlanif()"></select>
+    <select id="plaPeriodo" onchange="renderPlanif()">
+      <option value="1T">1er Cuatrimestre</option>
+      <option value="2T">2do Cuatrimestre</option>
+    </select>
+    <button class="grn" onclick="crearNuevaClase()"><i class="ti ti-plus"></i> Nueva Clase</button>
+  </div>
+  
+  <div class="card">
+    <label style="font-weight:700; display:block; margin-bottom:4px;">Nivel 1: Plan del Período / Macro-Objetivos</label>
+    <textarea id="plaMacroTexto" rows="2" placeholder="Describa el plan, ejes conceptuales o competencias clave del cuatrimestre..." onchange="savePlanMacro()"></textarea>
+  </div>
+
+  <div class="plan-grid">
+    <div>
+      <div class="card-head">Cronograma de Clases</div>
+      <div id="listaClasesPlanif" style="max-height:500px; overflow-y:auto;"></div>
+    </div>
+    <div class="card" id="panelEdicionClase" style="display:none;">
+      <div class="card-head" id="editClaseTitulo" style="border-bottom:1px solid var(--border); padding-bottom:6px;">Editar Clase</div>
+      <div id="containerRelatoriaAnterior" class="prev-relatoria" style="display:none;"></div>
+      <div class="row" style="margin-top:10px;">
+        <div style="flex:1;">
+          <label style="font-size:11px; font-weight:600; color:var(--ink2)">Fecha Planificada</label>
+          <input type="date" id="editClaseFecha" style="width:100%" onchange="saveClaseCampos()" />
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:11px; font-weight:600; color:var(--ink2)">Estado de la Clase</label>
+          <select id="editClaseEstado" style="width:100%" onchange="saveClaseCampos()">
+            <option value="planificada">Planificada</option>
+            <option value="dada_con">Dada (Con Relatoría)</option>
+            <option value="dada_sin">Dada (Sin Relatoría)</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label style="font-weight:700; display:block; margin-bottom:3px; color:var(--blue)">Nivel 2: Secuencia Didáctica</label>
+        <textarea id="editClaseSecuencia" rows="4" placeholder="Contenidos, actividades..." onchange="saveClaseCampos()"></textarea>
+      </div>
+      <div style="margin-top:12px;">
+        <label style="font-weight:700; display:block; margin-bottom:3px; color:var(--green)">Nivel 3: Relatoría Pedagógica</label>
+        <textarea id="editClaseRelatoria" rows="4" placeholder="¿Qué pasó realmente en el aula?..." onchange="saveClaseCampos()"></textarea>
+      </div>
+      <div style="margin-top:14px; text-align:right;">
+        <button class="red" style="font-size:11px;" onclick="eliminarClaseActual()"><i class="ti ti-trash"></i> Eliminar Clase</button>
+      </div>
+    </div>
+    <div class="card empty" id="panelEdicionVacio" style="display:block;">
+      Seleccioná o creá una clase para ver y editar su Secuencia y Relatoría.
+    </div>
+  </div>
+</div>
+
+<div id="sec-asistencia" class="sec">
+  <div class="row">
+    <select id="attEsc" onchange="updateMateriaSelect('attEsc', 'attMat', 'attCurso'); renderAtt();"></select>
+    <select id="attMat" onchange="updateCursoSelect('attEsc', 'attMat', 'attCurso'); renderAtt();"></select>
+    <select id="attCurso" onchange="renderAtt()"></select>
+    <input type="date" id="attFecha" onchange="renderAtt()" />
+    <button class="grn" onclick="markAllAtt('P')">Todos presentes</button>
+    <button class="sec-btn" onclick="forceCloudSync(event)">Forzar Sincronización</button>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th style="min-width:160px">Alumno/a</th><th>Estado hoy</th><th>Faltas Totales</th><th>% Asist.</th><th>Condición</th>
+    </tr></thead><tbody id="attBody"></tbody></table></div>
+  </div>
+</div>
+
+<div id="sec-notas" class="sec">
+  <div class="row">
+    <select id="notEsc" onchange="updateMateriaSelect('notEsc', 'notMat', 'notCurso'); renderNotas();"></select>
+    <select id="notMat" onchange="updateCursoSelect('notEsc', 'notMat', 'notCurso'); renderNotas();"></select>
+    <select id="notCurso" onchange="renderNotas()"></select>
+    <select id="notPeriodo" onchange="renderNotas()">
+      <option value="1T">1er Cuatrimestre</option>
+      <option value="2T">2do Cuatrimestre</option>
+    </select>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+        <th style="min-width:150px">Alumno/a</th><th style="min-width:110px">C1 — Cualitativa</th><th style="min-width:110px">C2 — Cualitativa</th><th style="width:62px">N1</th><th style="width:62px">N2</th><th style="width:72px">Nota final</th><th>Estado</th>
+    </tr></thead><tbody id="notasBody"></tbody></table></div>
+  </div>
+</div>
+
+<div id="sec-alumnos" class="sec">
+  <div class="row">
+    <select id="alnEsc" onchange="updateMateriaSelect('alnEsc', 'alnMat', 'alnCurso'); renderAlumnos();"></select>
+    <select id="alnMat" onchange="updateCursoSelect('alnEsc', 'alnMat', 'alnCurso'); renderAlumnos();"></select>
+    <select id="alnCurso" onchange="renderAlumnos()"></select>
+    <input type="text" id="alnSearch" placeholder="Buscar alumno/a..." oninput="renderAlumnos()" />
+    <button onclick="openModal('addAlumnoModal')"><i class="ti ti-plus"></i> Agregar Alumno</button>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>N°</th><th>Apellido y nombre</th><th>Condición Inicial</th><th>Asistencia Real</th><th>Rendimiento Promedio</th><th>Acciones</th>
+    </tr></thead><tbody id="alnBody"></tbody></table></div>
+  </div>
+</div>
+
+<div id="sec-obs" class="sec">
+  <div class="row">
+    <select id="obsEsc" onchange="updateMateriaSelect('obsEsc', 'obsMat', 'obsCurso'); renderObs();"></select>
+    <select id="obsMat" onchange="updateCursoSelect('obsEsc', 'obsMat', 'obsCurso'); renderObs();"></select>
+    <select id="obsCurso" onchange="renderObs()"></select>
+    <select id="obsAln" onchange="renderObs()"></select>
+    <button class="amb" onclick="openModal('addObsModal')"><i class="ti ti-plus"></i> Nueva observación</button>
+  </div>
+  <div id="obsList"></div>
+</div>
+
+</div>
+</div>
+
+<div class="modal-overlay" id="configModal">
+<div class="modal" style="max-width:550px">
+  <h3><i class="ti ti-settings"></i> Estructura Escuelas → Materias → Cursos</h3>
+  <div style="display:flex; gap:6px; margin-bottom:12px;">
+    <button onclick="openModal('addEscuelaModal')" class="grn" style="font-size:11px">+ Escuela</button>
+    <button onclick="openModal('addMateriaModal')" class="bl" style="font-size:11px">+ Materia</button>
+    <button onclick="openModal('addCursoModal')" class="amb" style="font-size:11px">+ Curso</button>
+  </div>
+  <div id="escuelasList" style="margin-bottom:12px; max-height:300px; overflow-y:auto;"></div>
+  
+  <div style="margin:12px 0 4px; padding:12px; background:var(--sand); border-radius:8px;">
+    <h4 style="font-size:12px; margin-bottom:4px;">Copia de Respaldo Manual</h4>
+    <div style="display:flex; gap:6px;">
+      <button onclick="exportarDatos()" class="grn" style="font-size:11px;">Exportar JSON</button>
+      <button onclick="document.getElementById('inputImportar').click()" class="sec-btn" style="font-size:11px;">Importar JSON</button>
+      <input type="file" id="inputImportar" accept=".json" style="display:none" onchange="importarDatos(event)">
+    </div>
+    <p id="msgBackup" style="font-size:11px; margin-top:6px; min-height:14px;"></p>
+  </div>
+  <div class="modal-foot"><button onclick="closeModal('configModal');renderAll()">Cerrar e Inicializar</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="addEscuelaModal"><div class="modal"><h3>Agregar Escuela</h3><label>Institución</label><input type="text" id="newEscNombre" placeholder="Ej: Escuela 753" /><div class="modal-foot"><button class="sec-btn" onclick="closeModal('addEscuelaModal')">Cancelar</button><button class="grn" onclick="agregarEscuela()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="addMateriaModal"><div class="modal"><h3>Agregar Materia</h3><label>Escuela</label><select id="addMatEscId"></select><label>Materia</label><input type="text" id="newMatNombre" placeholder="Ej: Economía" /><div class="modal-foot"><button class="sec-btn" onclick="closeModal('addMateriaModal')">Cancelar</button><button class="bl" onclick="agregarMateria()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="addCursoModal"><div class="modal"><h3>Agregar Curso</h3><label>Escuela</label><select id="addCurEscId" onchange="fillSelectMateriaGenerico('addCurEscId', 'addCurMatId')"></select><label>Materia</label><select id="addCurMatId"></select><label>Curso</label><input type="text" id="newCurNombre" placeholder="Ej: Módulo II A" /><div class="modal-foot"><button class="sec-btn" onclick="closeModal('addCursoModal')">Cancelar</button><button class="amb" onclick="agregarCurso()">Guardar</button></div></div></div>
+<div class="modal-overlay" id="addAlumnoModal"><div class="modal"><h3>Agregar Alumno/a</h3><label>Apellido y nombre</label><input type="text" id="newAlnNombre" /><label>N° Lista</label><input type="number" id="newAlnNum" /><label>Condición</label><select id="newAlnCond"><option>Regular</option><option>Libre</option><option>Condicional</option></select><div class="modal-foot"><button class="sec-btn" onclick="closeModal('addAlumnoModal')">Cancelar</button><button class="grn" onclick="agregarAlumno()">Agregar</button></div></div></div>
+<div class="modal-overlay" id="addObsModal"><div class="modal"><h3>Nueva Observación</h3><label>Escuela</label><select id="obsModalEsc" onchange="updateMateriaSelect('obsModalEsc', 'obsModalMat', 'obsModalCurso'); fillObsModalAln();"></select><label>Materia</label><select id="obsModalMat" onchange="updateCursoSelect('obsModalEsc', 'obsModalMat', 'obsModalCurso'); fillObsModalAln();"></select><label>Curso</label><select id="obsModalCurso" onchange="fillObsModalAln()"></select><label>Alumno</label><select id="obsModalAln"></select><label>Tipo</label><select id="obsModalTipo"><option>Académica</option><option>Conductual</option><option>Emocional</option></select><label>Fecha</label><input type="date" id="obsModalFecha" /><label>Descripción</label><textarea id="obsModalTexto" rows="3"></textarea><div class="modal-foot"><button class="sec-btn" onclick="closeModal('addObsModal')">Cancelar</button><button class="amb" onclick="guardarObs()">Guardar</button></div></div></div>
+
+<div id="reportePDF" style="display:none; padding:30px; background:#fff;"><div id="reporteContenido"></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  onSnapshot, 
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// =========================================================================
+// CONFIGURACIÓN DE TU BASE DE DATOS EN LA NUBE (FIREBASE)
+// Reemplazá estos datos con las credenciales que te dé la consola de Firebase
+// =========================================================================
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO_ID",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+// Inicializar la aplicación
+const app = initializeApp(firebaseConfig);
+
+// Inicializar Firestore con persistencia en caché local (Offline-First) habilitada estrictamente
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager() // Permite abrir la app en varias pestañas offline a la vez
+  })
+});
+
+// Variables globales del sistema
+window.escuelas = [];
+window.alumnos = {};       
+window.notas = {};         
+window.asistencia = {};    
+window.observaciones = []; 
+window.planesMacro = {}; 
+window.clasesPlanif = {}; 
+window.claseSeleccionadaId = null;
+let seedCounter = Date.now();
+
+// Escuchar cambios de red nativos del navegador celular o notebook
+window.addEventListener('online', () => updateNetworkUI(true));
+window.addEventListener('offline', () => updateNetworkUI(false));
+
+function updateNetworkUI(isOnline) {
+  const indicator = document.getElementById('networkIndicator');
+  if(!indicator) return;
+  if(isOnline) {
+    indicator.textContent = "🌐 En Línea (Sincronizado)";
+    indicator.className = "network-status net-online";
+  } else {
+    indicator.textContent = "⚠️ Sin Internet (Modo Local Segura)";
+    indicator.className = "network-status net-offline";
+  }
+}
+
+// SINCRONIZACIÓN EN TIEMPO REAL CON LA NUBE (Y CACHÉ LOCAL AUTOMÁTICO)
+// Firebase creará un único documento llamado "cuaderno_docente" bajo la colección "usuarios"
+function iniciarSincronizacionNube() {
+  const docRef = doc(db, "usuarios", "profesor_carina_luna");
+  
+  onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      window.escuelas = data.escuelas || [];
+      window.alumnos = data.alumnos || {};
+      window.notas = data.notas || {};
+      window.asistencia = data.asistencia || {};
+      window.observaciones = data.observaciones || [];
+      window.planesMacro = data.planesMacro || {};
+      window.clasesPlanif = data.clasesPlanif || {};
+      
+      document.getElementById('topSub').textContent = "Datos actualizados en la nube";
+    } else {
+      document.getElementById('topSub').textContent = "Base de datos en la nube lista (Vacía)";
+    }
+    // Forzar rediseño visual del front con los nuevos datos recibidos (o cacheados)
+    window.renderAll();
+  }, (error) => {
+    console.log("Corriendo en modo offline o error de permisos: ", error);
+  });
+}
+
+// Guardar datos: Firebase se encarga de escribir en IndexedDB inmediatamente y subirlo cuando detecte red
+window.guardarDatos = function() {
+  const docRef = doc(db, "usuarios", "profesor_carina_luna");
+  setDoc(docRef, {
+    escuelas: window.escuelas,
+    alumnos: window.alumnos,
+    notas: window.notas,
+    asistencia: window.asistencia,
+    observaciones: window.observaciones,
+    planesMacro: window.planesMacro,
+    clasesPlanif: window.clasesPlanif,
+    ultimaModificacion: new Date().toISOString()
+  }, { merge: true }).catch(err => console.error("Guardado en cola caché offline: ", err));
+  
+  // Renderizado optimizado instantáneo para que el docente no vea delay al escribir offline
+  window.renderResumen();
+};
+
+// Iniciar procesos al cargar la página
+updateNetworkUI(navigator.onLine);
+iniciarSincronizacionNube();
+
+</script>
+
+<script>
+const hoy = new Date().toISOString().split('T')[0];
+const CUAL = ['EA','EP','EI','AE','AS','S','MB','B','R','I','NA'];
+const CUAL_FULL = {EA:'En proceso avanzado',EP:'En proceso',EI:'En inicio',AE:'Alcanzó con excelencia',AS:'Alcanzó satisfactoriamente',S:'Satisfactorio',MB:'Muy bueno',B:'Bueno',R:'Regular',I:'Insuficiente',NA:'No acreditó'};
+
+function generateUniqueId(prefix) { return prefix + '_' + Math.random().toString(36).substr(2, 9); }
+
+function allCursosPro() {
+  const listado = [];
+  (window.escuelas || []).forEach(e => {
+    if (e.materias) {
+      e.materias.forEach(m => {
+        if (m.cursos) {
+          m.cursos.forEach(c => {
+            listado.push({ id: c.id, nombreSencillo: c.nombre, nombreCompleto: `${e.nombre} · ${m.nombre} · ${c.nombre}`, materiaId: m.id, materiaNombre: m.nombre, escId: e.id, escNombre: e.nombre, color: e.color || '#5040B0' });
+          });
+        }
+      });
+    }
+  });
+  return listado;
+}
+
+function getEscByCurso(cid) { return allCursosPro().find(c => c.id === cid) || {}; }
+function getAbsencias(cid, aid) { return Object.keys(window.asistencia || {}).filter(k => k.includes(`-${cid}-${aid}`) && window.asistencia[k] === 'A').length; }
+
+function getPct(cid, aid) {
+  const meta = getEscByCurso(cid);
+  const totalFaltas = getAbsencias(cid, aid);
+  if (meta && meta.escNombre && meta.escNombre.includes('753')) { return Math.max(0, Math.round(((37 - totalFaltas) / 37) * 100)); }
+  const all = Object.keys(window.asistencia || {}).filter(k => k.includes(`-${cid}-${aid}`));
+  if (!all.length) return 100;
+  return Math.round(all.filter(k => window.asistencia[k] !== 'A').length / all.length * 100);
+}
+
+function getCondicionAsistenciaTexto(pct) {
+  if (pct >= 85) return '<span class="badge b-green">Regular Sobresaliente</span>';
+  if (pct >= 75) return '<span class="badge b-amber">Regular Límite</span>';
+  return '<span class="badge b-red">Condición Libre</span>';
+}
+
+function getNF(cid, aid, per) { return ((window.notas[`${cid}-${aid}-${per}`]) || {}).nf || ''; }
+function getNotaEstructuraCompleta(cid, aid, per) { return (window.notas[`${cid}-${aid}-${per}`]) || {c1:'', c2:'', n1:'', n2:'', nf:''}; }
+
+function populateSelect(elementId, items, valueKey, textKey, selectedValue) {
+  const sel = document.getElementById(elementId); if (!sel) return; sel.innerHTML = '';
+  items.forEach(it => {
+    const opt = document.createElement('option'); opt.value = it[valueKey]; opt.textContent = it[textKey];
+    if (it[valueKey] === selectedValue) opt.selected = true; sel.appendChild(opt);
+  });
+}
+
+function updateMateriaSelect(escSelectId, matSelectId, curSelectId) {
+  const escId = document.getElementById(escSelectId)?.value;
+  const esc = (window.escuelas || []).find(e => e.id === escId);
+  populateSelect(matSelectId, esc && esc.materias ? esc.materias : [], 'id', 'nombre');
+  updateCursoSelect(escSelectId, matSelectId, curSelectId);
+}
+
+function updateCursoSelect(escSelectId, matSelectId, curSelectId) {
+  const escId = document.getElementById(escSelectId)?.value;
+  const matId = document.getElementById(matSelectId)?.value;
+  const esc = (window.escuelas || []).find(e => e.id === escId);
+  let cursos = [];
+  if (esc && esc.materias) { const mat = esc.materias.find(m => m.id === matId); if (mat && mat.cursos) cursos = mat.cursos; }
+  populateSelect(curSelectId, cursos, 'id', 'nombre');
+}
+
+function fillSelectMateriaGenerico(escSelectId, matSelectId) {
+  const escId = document.getElementById(escSelectId)?.value;
+  const esc = (window.escuelas || []).find(e => e.id === escId);
+  populateSelect(matSelectId, esc && esc.materias ? esc.materias : [], 'id', 'nombre');
+}
+
+function initAllSelects() {
+  const escOpts = (window.escuelas || []).map(e => ({id: e.id, nombre: e.nombre}));
+  ['attEsc','notEsc','alnEsc','obsEsc','plaEsc'].forEach(id => populateSelect(id, escOpts, 'id', 'nombre'));
+  updateMateriaSelect('attEsc', 'attMat', 'attCurso');
+  updateMateriaSelect('notEsc', 'notMat', 'notCurso');
+  updateMateriaSelect('alnEsc', 'alnMat', 'alnCurso');
+  updateMateriaSelect('obsEsc', 'obsMat', 'obsCurso');
+  updateMateriaSelect('plaEsc', 'plaMat', 'plaCurso');
+  populateSelect('addMatEscId', escOpts, 'id', 'nombre');
+  populateSelect('addCurEscId', escOpts, 'id', 'nombre');
+  fillSelectMateriaGenerico('addCurEscId', 'addCurMatId');
+  populateSelect('obsModalEsc', escOpts, 'id', 'nombre');
+  updateMateriaSelect('obsModalEsc', 'obsModalMat', 'obsModalCurso');
+  fillObsModalAln();
+  if(!document.getElementById('attFecha').value) document.getElementById('attFecha').value = hoy;
+  if(!document.getElementById('obsModalFecha').value) document.getElementById('obsModalFecha').value = hoy;
+  populateSelect('repCurso', allCursosPro(), 'id', 'nombreCompleto');
+}
+
+function fillObsModalAln() { populateSelect('obsModalAln', (window.alumnos[document.getElementById('obsModalCurso')?.value] || []), 'id', 'nombre'); }
+
+window.renderAll = function() {
+  initAllSelects(); renderResumen(); renderPlanif(); renderAtt(); renderNotas(); renderAlumnos(); renderObs();
+}
+
+function goTab(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  let targetId = id === 'notes' ? 'notas' : id;
+  if(document.getElementById('sec-' + targetId)) document.getElementById('sec-' + targetId).classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+
+function renderResumen() {
+  const tc = allCursosPro().length; let ta = 0, risk = 0, bajo = 0, tiene753 = false;
+  Object.values(window.alumnos || {}).forEach(v => ta += v.length);
+  allCursosPro().forEach(c => {
+    if (c.escNombre?.includes('753')) tiene753 = true;
+    (window.alumnos[c.id] || []).forEach(a => {
+      if (getPct(c.id, a.id) < 75) risk++;
+      ['1T', '2T'].forEach(per => { if (parseInt(getNF(c.id, a.id, per)) < 6) bajo++; });
+    });
+  });
+  document.getElementById('753ContextInfo').style.display = tiene753 ? 'flex' : 'none';
+  document.getElementById('resStats').innerHTML = `<div class="stat"><div class="stat-l">Cursos Activos</div><div class="stat-v">${tc}</div></div><div class="stat"><div class="stat-l">Alumnos Totales</div><div class="stat-v">${ta}</div></div><div class="stat"><div class="stat-l">Riesgo Asist.</div><div class="stat-v" style="color:${risk?'var(--red)':'var(--green)'}">${risk}</div></div><div class="stat"><div class="stat-l">Observaciones</div><div class="stat-v">${(window.observaciones || []).length}</div></div>`;
+  let ch = '';
+  (window.escuelas || []).forEach(e => {
+    ch += `<div style="margin-bottom:12px; border-left: 4px solid ${e.color || '#5040B0'}; padding-left:10px;"><div style="font-weight:600;">${e.nombre}</div>`;
+    if (e.materias) {
+      e.materias.forEach(m => {
+        if (m.cursos) {
+          m.cursos.forEach(c => {
+            const aln = window.alumnos[c.id] || []; const avgP = aln.length ? Math.round(aln.map(a => getPct(c.id, a.id)).reduce((a,b)=>a+b,0)/aln.length) : 100;
+            ch += `<div style="display:flex; justify-content:space-between; background:#fff; padding:6px; margin:3px 0; border:1px solid var(--border); border-radius:6px;"><span>${c.nombre} (${m.nombre})</span><span class="badge ${avgP>=75?'b-green':'b-red'}">${avgP}% Asist</span></div>`;
+          });
+        }
+      });
+    }
+    ch += '</div>';
+  });
+  document.getElementById('resCursos').innerHTML = ch || '<div class="empty">Estructura vacía. Agregá escuelas desde Configurar.</div>';
+}
+
+function getPlanifKey() { const cid = document.getElementById('plaCurso')?.value; const per = document.getElementById('plaPeriodo')?.value; return cid && per ? `${cid}-${per}` : null; }
+
+function renderPlanif() {
+  const key = getPlanifKey(); if (!key) return;
+  document.getElementById('plaMacroTexto').value = window.planesMacro[key] || '';
+  const clases = window.clasesPlanif[key] || []; clases.sort((a,b) => a.nro - b.nro);
+  let html = '';
+  if (!clases.length) {
+    html = '<div class="empty">No hay clases registradas.</div>';
+    document.getElementById('panelEdicionClase').style.display = 'none';
+    document.getElementById('panelEdicionVacio').style.display = 'block';
+  } else {
+    clases.forEach(c => {
+      const isAct = window.claseSeleccionadaId === c.id ? 'active' : '';
+      html += `<div class="clase-item ${isAct}" onclick="seleccionarClase('${c.id}')"><div><strong>Clase N° ${c.nro}</strong><span style="font-size:11px; margin-left:6px;">${c.fecha}</span></div><span class="badge ${c.estado==='planificada'?'b-blue':c.estado==='dada_con'?'b-green':'b-amber'}">${c.estado}</span></div>`;
+    });
+    if (window.claseSeleccionadaId) { cargarFormularioEdicionClase(window.claseSeleccionadaId); } else { document.getElementById('panelEdicionClase').style.display = 'none'; document.getElementById('panelEdicionVacio').style.display = 'block'; }
+  }
+  document.getElementById('listaClasesPlanif').innerHTML = html;
+}
+
+function savePlanMacro() { const key = getPlanifKey(); if (key) { window.planesMacro[key] = document.getElementById('plaMacroTexto').value; guardarDatos(); } }
+
+function crearNuevaClase() {
+  const key = getPlanifKey(); if (!key) return;
+  if (!window.clasesPlanif[key]) window.clasesPlanif[key] = [];
+  const nuevoNro = window.clasesPlanif[key].reduce((max, c) => c.nro > max ? c.nro : max, 0) + 1;
+  const nuevaClase = { id: generateUniqueId('cls'), nro: nuevoNro, fecha: hoy, estado: 'planificada', secuencia: '', relatoria: '' };
+  window.clasesPlanif[key].push(nuevaClase); window.claseSeleccionadaId = nuevaClase.id;
+  guardarDatos(); renderPlanif();
+}
+
+function seleccionarClase(id) { window.claseSeleccionadaId = id; renderPlanif(); }
+
+function cargarFormularioEdicionClase(id) {
+  const key = getPlanifKey(); const clases = window.clasesPlanif[key] || []; const clase = clases.find(x => x.id === id); if (!clase) return;
+  document.getElementById('panelEdicionVacio').style.display = 'none'; document.getElementById('panelEdicionClase').style.display = 'block';
+  document.getElementById('editClaseTitulo').textContent = `📝 Editando Clase N° ${clase.nro}`;
+  document.getElementById('editClaseFecha').value = clase.fecha;
+  document.getElementById('editClaseEstado').value = clase.estado;
+  document.getElementById('editClaseSecuencia').value = clase.secuencia;
+  document.getElementById('editClaseRelatoria').value = clase.relatoria;
+  const prevContainer = document.getElementById('containerRelatoriaAnterior');
+  const claseAnterior = clases.filter(x => x.nro < clase.nro).sort((a,b) => b.nro - a.nro)[0];
+  if (claseAnterior) { prevContainer.style.display = 'block'; prevContainer.innerHTML = `<strong>💡 Relatoría Anterior (Clase N° ${claseAnterior.nro}):</strong><br><em>${claseAnterior.relatoria || '(Vacía)'}</em>`; } else { prevContainer.style.display = 'none'; }
+}
+
+function saveClaseCampos() {
+  const key = getPlanifKey(); if (!key || !window.claseSeleccionadaId) return;
+  const clase = window.clasesPlanif[key]?.find(x => x.id === window.claseSeleccionadaId); if (!clase) return;
+  clase.fecha = document.getElementById('editClaseFecha').value;
+  clase.estado = document.getElementById('editClaseEstado').value;
+  clase.secuencia = document.getElementById('editClaseSecuencia').value;
+  clase.relatoria = document.getElementById('editClaseRelatoria').value;
+  guardarDatos();
+}
+
+function eliminarClaseActual() {
+  if (!confirm('¿Eliminar esta clase?')) return; const key = getPlanifKey(); if (!key || !window.claseSeleccionadaId) return;
+  window.clasesPlanif[key] = window.clasesPlanif[key].filter(x => x.id !== window.claseSeleccionadaId); window.claseSeleccionadaId = null;
+  guardarDatos(); renderPlanif();
+}
+
+function renderAtt() {
+  const cid = document.getElementById('attCurso')?.value; const fecha = document.getElementById('attFecha')?.value || hoy; const ab = document.getElementById('attBody'); if(!ab) return;
+  if (!cid) { ab.innerHTML = `<tr><td colspan="5" class="empty">Seleccioná un curso</td></tr>`; return; }
+  let html = '';
+  (window.alumnos[cid] || []).forEach(a => {
+    const dk = `${fecha}-${cid}-${a.id}`; const st = window.asistencia[dk] || 'P'; const pct = getPct(cid, a.id); const pc = pct >= 75 ? 'var(--green)' : 'var(--red)';
+    html += `<tr><td>${a.nombre}</td><td><div style="display:flex;gap:3px">
+        <button class="att-btn ap ${st==='P'?'on':''}" onclick="setAtt('${dk}','P')">P</button>
+        <button class="att-btn aa ${st==='A'?'on':''}" onclick="setAtt('${dk}','A')">A</button>
+        <button class="att-btn at ${st==='T'?'on':''}" onclick="setAtt('${dk}','T')">T</button>
+        <button class="att-btn aj ${st==='J'?'on':''}" onclick="setAtt('${dk}','J')">J</button>
+      </div></td><td>${getAbsencias(cid, a.id)} Faltas</td><td><span style="color:${pc};font-weight:700">${pct}%</span></td><td>${getCondicionAsistenciaTexto(pct)}</td></tr>`;
+  });
+  ab.innerHTML = html || `<tr><td colspan="5" class="empty">Sin alumnos</td></tr>`;
+}
+
+function setAtt(dk, val) { window.asistencia[dk] = val; guardarDatos(); renderAtt(); }
+function markAllAtt(v) { const cid = document.getElementById('attCurso')?.value; const fecha = document.getElementById('attFecha')?.value || hoy; if(!cid) return; (window.alumnos[cid] || []).forEach(a => { window.asistencia[`${fecha}-${cid}-${a.id}`] = v; }); guardarDatos(); renderAtt(); }
+function forceCloudSync(e) { guardarDatos(); const b = e.target; b.textContent = 'Sincronizado ✓'; setTimeout(() => b.textContent = 'Forzar Sincronización', 1500); }
+
+function renderNotas() {
+  const cid = document.getElementById('notCurso')?.value; const per = document.getElementById('notPeriodo')?.value || '1T'; const nb = document.getElementById('notasBody'); if(!nb) return;
+  if (!cid) { nb.innerHTML = `<tr><td colspan="7" class="empty">Seleccioná agrupamiento</td></tr>`; return; }
+  let html = '';
+  (window.alumnos[cid] || []).forEach(a => {
+    const k = `${cid}-${a.id}-${per}`; if (!window.notes) window.notes = {}; if (!window.notas[k]) window.notas[k] = {c1:'', c2:'', n1:'', n2:'', nf:''}; const n = window.notas[k];
+    html += `<tr><td>${a.nombre}</td>
+      <td><select onchange="updateNota('${k}','c1',this.value)"><option value="">—</option>${CUAL.map(c=>`<option value="${c}" ${n.c1===c?'selected':''}>${c}</option>`).join('')}</select></td>
+      <td><select onchange="updateNota('${k}','c2',this.value)"><option value="">—</option>${CUAL.map(c=>`<option value="${c}" ${n.c2===c?'selected':''}>${c}</option>`).join('')}</select></td>
+      <td><input class="ni" type="number" value="${n.n1}" onchange="updateNota('${k}','n1',this.value);calcNF('${k}')" /></td>
+      <td><input class="ni" type="number" value="${n.n2}" onchange="updateNota('${k}','n2',this.value);calcNF('${k}')" /></td>
+      <td><input class="ni nf-cell" type="number" value="${n.nf}" onchange="updateNota('${k}','nf',this.value)" /></td>
+      <td><span class="badge ${parseInt(n.nf)>=6?'b-green':'b-gray'}">${parseInt(n.nf)>=6?'Aprobado':'—'}</span></td></tr>`;
+  });
+  nb.innerHTML = html || `<tr><td colspan="7" class="empty">Sin alumnos</td></tr>`;
+}
+
+function updateNota(k, campo, val) { if (!window.notas[k]) window.notas[k] = {c1:'', c2:'', n1:'', n2:'', nf:''}; window.notas[k][campo] = val; guardarDatos(); }
+function calcNF(k) { const n = window.notas[k]; const v1 = parseInt(n.n1), v2 = parseInt(n.n2); if (v1 && v2) { window.notas[k].nf = Math.round((v1 + v2) / 2).toString(); renderNotas(); } }
+
+function renderAlumnos() {
+  const cid = document.getElementById('alnCurso')?.value; const q = (document.getElementById('alnSearch')?.value || '').toLowerCase(); const alb = document.getElementById('alnBody'); if(!alb) return;
+  if (!cid) { alb.innerHTML = `<tr><td colspan="6" class="empty">Seleccioná un curso</td></tr>`; return; }
+  let html = '';
+  (window.alumnos[cid] || []).filter(a => a.nombre.toLowerCase().includes(q)).forEach(a => {
+    html += `<tr><td>${a.num}</td><td><strong>${a.nombre}</strong></td><td>${a.cond}</td><td>${getPct(cid, a.id)}%</td><td>—</td><td><button class="sec-btn" onclick="removeAlumno('${cid}',${a.id})">✕</button></td></tr>`;
+  });
+  alb.innerHTML = html || `<tr><td colspan="6" class="empty">Sin alumnos</td></tr>`;
+}
+
+function removeAlumno(cid, aid) { if (confirm('¿Eliminar?')) { window.alumnos[cid] = (window.alumnos[cid] || []).filter(a => a.id !== aid); guardarDatos(); renderAlumnos(); } }
+function agregarAlumno() {
+  const cid = document.getElementById('alnCurso')?.value; if (!cid) return;
+  const nombre = document.getElementById('newAlnNombre').value.trim(); if (!nombre) return;
+  if (!window.alumnos[cid]) window.alumnos[cid] = [];
+  window.alumnos[cid].push({ id: seedCounter++, num: parseInt(document.getElementById('newAlnNum').value)||1, nombre, cond: document.getElementById('newAlnCond').value });
+  guardarDatos(); closeModal('addAlumnoModal'); renderAlumnos();
+}
+
+function renderObs() {
+  const cid = document.getElementById('obsCurso')?.value; const obs = (window.observaciones || []).filter(o => o.cursoId === cid);
+  let html = ''; obs.forEach(o => {
+    const a = (window.alumnos[o.cursoId] || []).find(x => x.id === o.alnId) || {};
+    html += `<div class="obs-item"><strong>${a.nombre || 'General'}</strong> [${o.tipo}] - ${o.texto} <div class="obs-meta">${o.fecha}</div></div>`;
+  });
+  document.getElementById('obsList').innerHTML = html || '<div class="empty">Sin observaciones</div>';
+}
+
+function guardarObs() {
+  window.observaciones.push({ cursoId: document.getElementById('obsModalCurso').value, alnId: parseInt(document.getElementById('obsModalAln').value)||0, tipo: document.getElementById('obsModalTipo').value, fecha: document.getElementById('obsModalFecha').value, texto: document.getElementById('obsModalTexto').value });
+  guardarDatos(); closeModal('addObsModal'); renderObs();
+}
+
+function renderEscuelasList() {
+  let html = ''; (window.escuelas || []).forEach(e => {
+    html += `<div style="background:var(--cream); padding:10px; margin-bottom:6px; border:1px solid var(--border2)"><strong>${e.nombre}</strong> <button class="red" style="padding:2px 5px; font-size:10px;" onclick="eliminarEscuela('${e.id}')">Borrar</button></div>`;
+  });
+  document.getElementById('escuelasList').innerHTML = html || '<div class="empty">Sin escuelas</div>';
+}
+
+function eliminarEscuela(eid) { if (confirm('¿Eliminar escuela?')) { window.escuelas = window.escuelas.filter(e => e.id !== eid); guardarDatos(); renderEscuelasList(); } }
+function agregarEscuela() { const nombre = document.getElementById('newEscNombre').value.trim(); if (nombre) { window.escuelas.push({ id: generateUniqueId('esc'), nombre, color: '#5040B0', materias: [] }); guardarDatos(); renderEscuelasList(); initAllSelects(); } }
+function agregarMateria() {
+  const esc = window.escuelas.find(e => e.id === document.getElementById('addMatEscId').value);
+  if (esc) { if(!esc.materias) esc.materias = []; esc.materias.push({ id: generateUniqueId('mat'), nombre: document.getElementById('newMatNombre').value, cursos: [] }); guardarDatos(); renderEscuelasList(); initAllSelects(); }
+}
+function agregarCurso() {
+  const esc = window.escuelas.find(e => e.id === document.getElementById('addCurEscId').value);
+  const mat = esc?.materias?.find(m => m.id === document.getElementById('addCurMatId').value);
+  if (mat) { if(!mat.cursos) mat.cursos = []; const cid = generateUniqueId('cur'); mat.cursos.push({ id: cid, nombre: document.getElementById('newCurNombre').value }); window.alumnos[cid] = []; guardarDatos(); renderEscuelasList(); initAllSelects(); }
+}
+
+function exportarDatos() {
+  const blob = new Blob([JSON.stringify({ escuelas: window.escuelas, alumnos: window.alumnos, notas: window.notas, asistencia: window.asistencia, observaciones: window.observaciones, planesMacro: window.planesMacro, clasesPlanif: window.clasesPlanif })], {type: 'application/json'});
+  const a = document.createElement('a'); a.download = 'backup-docente.json'; a.href = URL.createObjectURL(blob); a.click();
+}
+function importarDatos(e) {
+  const reader = new FileReader(); reader.onload = function(evt) {
+    const d = JSON.parse(evt.target.result); window.escuelas = d.escuelas; window.alumnos = d.alumnos; window.notas = d.notas; window.asistencia = d.asistencia; window.observaciones = d.observaciones; window.planesMacro = d.planesMacro; window.clasesPlanif = d.clasesPlanif; window.guardarDatos();
+  }; reader.readAsText(e.target.files[0]);
+}
+
+function generarReportePDF() {
+  const cid = document.getElementById('repCurso')?.value; if (!cid) return;
+  const meta = getEscByCurso(cid);
+  let html = `<h2>Reporte de Trayectoria: ${meta.escNombre}</h2><p>Materia: ${meta.materiaNombre} | Curso: ${meta.nombreSencillo}</p><hr/>`;
+  (window.alumnos[cid] || []).forEach(a => { html += `<p><strong>${a.nombre}</strong> - Asistencia: ${getPct(cid, a.id)}% | Nota Final 1T: ${getNF(cid, a.id, '1T') || '—'}</p>`; });
+  document.getElementById('reporteContenido').innerHTML = html;
+  const p = document.getElementById('reportePDF'); p.style.display = 'block'; window.print(); p.style.display = 'none';
+}
+
+function openModal(id) { if (id === 'configModal') renderEscuelasList(); document.getElementById(id)?.classList.add('on'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('on'); }
+</script>
+</body>
+</html>
